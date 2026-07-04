@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resume Data Modify</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg: #f3f6f4;
+      --panel: #ffffff;
+      --ink: #172326;
+      --muted: #66736f;
+      --line: #d7e1dc;
+      --accent: #0f8b75;
+      --accent-2: #d89b27;
+      --soft: #eef7f4;
+      --danger: #a33a36;
+    }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", Arial, sans-serif;
+      background: linear-gradient(135deg, #f7fbfa, var(--bg));
+      line-height: 1.6;
+    }
+    button, input, textarea {
+      font: inherit;
+    }
+    button {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+      min-height: 38px;
+      padding: 7px 11px;
+    }
+    button:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .primary:hover {
+      background: #0b735f;
+      color: #fff;
+    }
+    .danger {
+      color: var(--danger);
+    }
+    .page {
+      width: min(1280px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 44px;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(1.6rem, 4vw, 2.6rem);
+      line-height: 1.1;
+    }
+    .status {
+      color: var(--muted);
+      font-size: .92rem;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .nav, .panel {
+      background: rgba(255,255,255,.92);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 16px 38px rgba(23,35,38,.08);
+    }
+    .nav {
+      position: sticky;
+      top: 16px;
+      padding: 10px;
+      display: grid;
+      gap: 6px;
+    }
+    .nav button {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border-color: transparent;
+    }
+    .nav button.active {
+      background: var(--soft);
+      border-color: #b9d8cf;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .content {
+      display: grid;
+      gap: 16px;
+    }
+    .panel {
+      padding: 18px;
+    }
+    .panel[hidden] {
+      display: none;
+    }
+    h2 {
+      margin: 0 0 14px;
+      font-size: 1.12rem;
+      color: var(--accent);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 11px;
+      color: var(--ink);
+      background: #fff;
+      outline: none;
+    }
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+    input:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(15,139,117,.12);
+    }
+    .stack {
+      display: grid;
+      gap: 10px;
+    }
+    .item {
+      display: grid;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfdfc;
+    }
+    .item-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .item-title {
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .mini-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .mini-actions button {
+      min-width: 36px;
+      padding: 5px 8px;
+    }
+    .full {
+      grid-column: 1 / -1;
+    }
+    .json-box {
+      min-height: 380px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: .88rem;
+      white-space: pre;
+    }
+    .footer-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 14px;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    @media (max-width: 880px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .nav {
+        position: static;
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .actions {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div>
+        <h1>履歷資料後台</h1>
+        <div class="status" id="status">data.json</div>
+      </div>
+      <div class="actions">
+        <button id="openBtn" type="button">開啟 JSON</button>
+        <button id="reloadBtn" type="button">重新載入</button>
+        <button id="previewBtn" type="button">預覽 index.html</button>
+        <button class="primary" id="saveBtn" type="button">儲存 JSON</button>
+      </div>
+    </header>
+
+    <section class="layout">
+      <nav class="nav" id="nav"></nav>
+      <div class="content" id="content"></div>
+    </section>
+  </main>
+  <input id="fileInput" type="file" accept="application/json,.json">
+
+  <script>
+    const sections = [
+      ["profile", "基本資料"],
+      ["contact", "聯絡資料"],
+      ["application", "應徵資訊"],
+      ["titles", "區塊標題"],
+      ["metrics", "指標"],
+      ["summary", "專業摘要"],
+      ["skills", "專長工具"],
+      ["jobs", "工作經歷"],
+      ["cases", "行政案例"],
+      ["json", "JSON"]
+    ];
+
+    const fieldLabels = {
+      "profile.name": "姓名",
+      "profile.role": "職稱",
+      "profile.tagline": "定位標語",
+      "contact.phone": "電話",
+      "contact.email": "Email",
+      "contact.address": "地址",
+      "contact.education": "學歷",
+      "contact.license": "證照",
+      "contact.language": "語言",
+      "application.desiredPosition": "應徵職缺",
+      "application.salary": "希望待遇",
+      "application.availableDate": "可上班日",
+      "application.gender": "性別",
+      "application.birthdate": "出生日期",
+      "application.heightWeight": "身高體重",
+      "application.militaryMarriage": "服役婚姻"
+    };
+
+    const defaultData = {
+      profile: { name: "", role: "", tagline: "" },
+      contact: { phone: "", email: "", address: "", education: "", license: "", language: "" },
+      application: { desiredPosition: "", salary: "", availableDate: "", gender: "", birthdate: "", heightWeight: "", militaryMarriage: "" },
+      labels: { phone: "電話", email: "Email", address: "地址", education: "學歷", license: "證照", language: "語言" },
+      sectionTitles: { summary: "專業摘要", application: "應徵資訊", skills: "臨床專長", tools: "行政與 AI 工具", toolsShort: "工具", jobs: "工作經歷", contact: "聯絡資料", profile: "履歷資料矩陣", skillMatrix: "技能矩陣", cases: "行政流程案例", educationLicense: "學歷與證照" },
+      metrics: [],
+      summary: [],
+      clinicalSkills: [],
+      toolsShort: [],
+      toolsFull: [],
+      skillBars: [],
+      jobs: [],
+      cases: []
+    };
+
+    let data = structuredClone(defaultData);
+    let fileHandle = null;
+    let activeSection = "profile";
+    let previewWindow = null;
+
+    const previewKey = "ptResumeDataDraft";
+    const channelName = "pt-resume-data";
+    const previewChannel = "BroadcastChannel" in window ? new BroadcastChannel(channelName) : null;
+
+    const nav = document.getElementById("nav");
+    const content = document.getElementById("content");
+    const status = document.getElementById("status");
+    const fileInput = document.getElementById("fileInput");
+
+    init();
+
+    async function init() {
+      renderNav();
+      bindActions();
+      showLoading();
+      await loadDefaultJson();
+    }
+
+    function showLoading() {
+      content.innerHTML = `<section class="panel"><h2>正在讀取 data.json</h2><div class="status">請稍候，資料載入後即可直接修改。</div></section>`;
+      touch("正在讀取 data.json");
+    }
+
+    function bindActions() {
+      nav.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-section]");
+        if (!button) return;
+        activeSection = button.dataset.section;
+        renderAll();
+      });
+      document.getElementById("openBtn").addEventListener("click", openJson);
+      document.getElementById("reloadBtn").addEventListener("click", loadDefaultJson);
+      document.getElementById("previewBtn").addEventListener("click", openPreview);
+      document.getElementById("saveBtn").addEventListener("click", saveJson);
+      fileInput.addEventListener("change", loadFromInput);
+
+      content.addEventListener("input", (event) => {
+        const target = event.target;
+        if (!target.dataset.path) return;
+        setPath(target.dataset.path, target.value);
+        refreshJsonPanel();
+        publishPreview();
+        touch("已修改");
+      });
+
+      content.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-action]");
+        if (!button) return;
+        handleItemAction(button);
+      });
+    }
+
+    async function loadDefaultJson() {
+      try {
+        data = normalize(await loadJson("data.json"));
+        fileHandle = null;
+        renderAll();
+        publishPreview();
+        touch("已載入 data.json");
+      } catch {
+        renderAll();
+        touch("可開啟 JSON");
+      }
+    }
+
+    async function loadJson(url) {
+      try {
+        const response = await fetch(url, { cache: "no-store" });
+        if (!response.ok) throw new Error(response.status);
+        return await response.json();
+      } catch {
+        return await loadJsonViaFrame(url);
+      }
+    }
+
+    function loadJsonViaFrame(url) {
+      return new Promise((resolve, reject) => {
+        const frame = document.createElement("iframe");
+        frame.style.cssText = "position:absolute;width:0;height:0;border:0;visibility:hidden;";
+        frame.onload = () => {
+          try {
+            const raw = frame.contentDocument?.body?.innerText || frame.contentWindow?.document?.body?.innerText || "";
+            frame.remove();
+            raw ? resolve(JSON.parse(raw)) : reject(new Error("data.json 沒有讀到內容"));
+          } catch (error) {
+            frame.remove();
+            reject(error);
+          }
+        };
+        frame.onerror = () => {
+          frame.remove();
+          reject(new Error("data.json 讀取失敗"));
+        };
+        frame.src = url;
+        document.body.appendChild(frame);
+      });
+    }
+
+    async function openJson() {
+      if (window.showOpenFilePicker) {
+        const [handle] = await window.showOpenFilePicker({
+          types: [{ description: "JSON", accept: { "application/json": [".json"] } }],
+          multiple: false
+        });
+        fileHandle = handle;
+        const file = await handle.getFile();
+        data = normalize(JSON.parse(await file.text()));
+        renderAll();
+        publishPreview();
+        touch(file.name);
+        return;
+      }
+      fileInput.click();
+    }
+
+    async function loadFromInput() {
+      const file = fileInput.files?.[0];
+      if (!file) return;
+      fileHandle = null;
+      data = normalize(JSON.parse(await file.text()));
+      renderAll();
+      publishPreview();
+      touch(file.name);
+      fileInput.value = "";
+    }
+
+    async function saveJson() {
+      syncJsonPanel();
+      const json = JSON.stringify(data, null, 2);
+
+      if (fileHandle?.createWritable) {
+        try {
+          if (fileHandle.queryPermission) {
+            const permission = await fileHandle.queryPermission({ mode: "readwrite" });
+            if (permission !== "granted") {
+              throw new Error("Write permission is not granted.");
+            }
+          }
+
+          const writable = await fileHandle.createWritable();
+          await writable.write(json);
+          await writable.close();
+          publishPreview();
+          touch("已儲存");
+          return;
+        } catch {
+          fileHandle = null;
+        }
+      }
+
+      downloadJson(json);
+    }
+
+    function downloadJson(json) {
+      const blob = new Blob([json], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "data.json";
+      link.style.display = "none";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+      publishPreview();
+      touch("已下載 data.json");
+    }
+
+    function renderNav() {
+      nav.innerHTML = sections.map(([id, label]) => (
+        `<button type="button" data-section="${id}" class="${id === activeSection ? "active" : ""}">${label}</button>`
+      )).join("");
+    }
+
+    function renderAll() {
+      renderNav();
+      content.innerHTML = [
+        panel("profile", "基本資料", objectFields(["profile.name", "profile.role", "profile.tagline"])),
+        panel("contact", "聯絡資料", objectFields(["contact.phone", "contact.email", "contact.address", "contact.education", "contact.license", "contact.language"])),
+        panel("application", "應徵資訊", objectFields(["application.desiredPosition", "application.salary", "application.availableDate", "application.gender", "application.birthdate", "application.heightWeight", "application.militaryMarriage"])),
+        panel("titles", "區塊標題", objectFields(Object.keys(data.sectionTitles).map((key) => `sectionTitles.${key}`))),
+        panel("metrics", "指標", arrayObjects("metrics", [{ key: "value", label: "數值" }, { key: "label", label: "標籤" }])),
+        panel("summary", "專業摘要", arrayText("summary", "段落")),
+        panel("skills", "專長工具", [
+          arrayText("clinicalSkills", "臨床專長"),
+          arrayText("toolsShort", "精簡工具"),
+          arrayText("toolsFull", "完整工具"),
+          arrayObjects("skillBars", [{ key: "label", label: "能力" }, { key: "width", label: "比例" }])
+        ].join("")),
+        panel("jobs", "工作經歷", arrayObjects("jobs", [
+          { key: "period", label: "期間" },
+          { key: "company", label: "單位" },
+          { key: "title", label: "職稱" },
+          { key: "detail", label: "重點", full: true }
+        ])),
+        panel("cases", "行政案例", arrayObjects("cases", [
+          { key: "title", label: "標題" },
+          { key: "text", label: "內容", full: true, textarea: true }
+        ])),
+        panel("json", "JSON", `<textarea class="json-box" id="jsonBox">${escapeHtml(JSON.stringify(data, null, 2))}</textarea><div class="footer-actions"><button type="button" data-action="apply-json">套用 JSON</button></div>`)
+      ].join("");
+      refreshJsonPanel();
+    }
+
+    function panel(id, title, body) {
+      return `<section class="panel" ${id === activeSection ? "" : "hidden"}><h2>${title}</h2>${body}</section>`;
+    }
+
+    function objectFields(paths) {
+      return `<div class="grid">${paths.map((path) => {
+        const label = fieldLabels[path] || path.split(".").pop();
+        return field(path, label, getPath(path));
+      }).join("")}</div>`;
+    }
+
+    function arrayText(path, label) {
+      const items = getPath(path) || [];
+      return `<div class="stack" data-array="${path}">
+        <div class="item-head"><span class="item-title">${label}</span><button type="button" data-action="add-text" data-array="${path}">＋</button></div>
+        ${items.map((item, index) => `
+          <div class="item">
+            <div class="item-head"><span class="item-title">${label} ${index + 1}</span>${itemButtons(path, index)}</div>
+            <label class="full">內容<textarea data-path="${path}.${index}">${escapeHtml(item)}</textarea></label>
+          </div>`).join("")}
+      </div>`;
+    }
+
+    function arrayObjects(path, fields) {
+      const items = getPath(path) || [];
+      return `<div class="stack" data-array="${path}">
+        <div class="item-head"><span class="item-title">${arrayTitle(path)}</span><button type="button" data-action="add-object" data-array="${path}">＋</button></div>
+        ${items.map((item, index) => `
+          <div class="item">
+            <div class="item-head"><span class="item-title">${arrayTitle(path)} ${index + 1}</span>${itemButtons(path, index)}</div>
+            <div class="grid">
+              ${fields.map((config) => field(`${path}.${index}.${config.key}`, config.label, item?.[config.key] || "", config)).join("")}
+            </div>
+          </div>`).join("")}
+      </div>`;
+    }
+
+    function field(path, label, value, config = {}) {
+      const full = config.full ? " full" : "";
+      if (config.textarea) {
+        return `<label class="${full}">${label}<textarea data-path="${path}">${escapeHtml(value)}</textarea></label>`;
+      }
+      return `<label class="${full}">${label}<input data-path="${path}" value="${escapeAttr(value)}"></label>`;
+    }
+
+    function itemButtons(path, index) {
+      return `<span class="mini-actions">
+        <button type="button" data-action="up" data-array="${path}" data-index="${index}">↑</button>
+        <button type="button" data-action="down" data-array="${path}" data-index="${index}">↓</button>
+        <button class="danger" type="button" data-action="remove" data-array="${path}" data-index="${index}">×</button>
+      </span>`;
+    }
+
+    function handleItemAction(button) {
+      const action = button.dataset.action;
+      if (action === "apply-json") {
+        const box = document.getElementById("jsonBox");
+        data = normalize(JSON.parse(box.value));
+        renderAll();
+        publishPreview();
+        touch("已套用 JSON");
+        return;
+      }
+
+      const path = button.dataset.array;
+      const array = getPath(path);
+      const index = Number(button.dataset.index);
+      if (!Array.isArray(array)) return;
+
+      if (action === "add-text") array.push("");
+      if (action === "add-object") array.push(emptyObjectFor(path));
+      if (action === "remove") array.splice(index, 1);
+      if (action === "up" && index > 0) [array[index - 1], array[index]] = [array[index], array[index - 1]];
+      if (action === "down" && index < array.length - 1) [array[index + 1], array[index]] = [array[index], array[index + 1]];
+      renderAll();
+      publishPreview();
+      touch("已修改");
+    }
+
+    function openPreview() {
+      syncJsonPanel();
+      publishPreview();
+      previewWindow = window.open("index.html?preview=1", "_blank");
+      setTimeout(publishPreview, 300);
+    }
+
+    function publishPreview() {
+      const message = { type: "resume-data", data };
+      try {
+        localStorage.setItem(previewKey, JSON.stringify(data));
+      } catch {}
+
+      previewChannel?.postMessage(message);
+
+      if (previewWindow && !previewWindow.closed) {
+        previewWindow.postMessage(message, "*");
+      }
+    }
+
+    function syncJsonPanel() {
+      if (activeSection !== "json") return;
+      const box = document.getElementById("jsonBox");
+      if (box) data = normalize(JSON.parse(box.value));
+    }
+
+    function refreshJsonPanel() {
+      const box = document.getElementById("jsonBox");
+      if (box && document.activeElement !== box) box.value = JSON.stringify(data, null, 2);
+    }
+
+    function normalize(source) {
+      return {
+        ...structuredClone(defaultData),
+        ...source,
+        profile: { ...defaultData.profile, ...(source.profile || {}) },
+        contact: { ...defaultData.contact, ...(source.contact || {}) },
+        application: { ...defaultData.application, ...(source.application || {}) },
+        labels: { ...defaultData.labels, ...(source.labels || {}) },
+        sectionTitles: { ...defaultData.sectionTitles, ...(source.sectionTitles || {}) },
+        metrics: source.metrics || [],
+        summary: source.summary || [],
+        clinicalSkills: source.clinicalSkills || [],
+        toolsShort: source.toolsShort || [],
+        toolsFull: source.toolsFull || [],
+        skillBars: source.skillBars || [],
+        jobs: source.jobs || [],
+        cases: source.cases || []
+      };
+    }
+
+    function emptyObjectFor(path) {
+      const map = {
+        metrics: { value: "", label: "" },
+        skillBars: { label: "", width: "90%" },
+        jobs: { period: "", company: "", title: "", detail: "" },
+        cases: { title: "", text: "" }
+      };
+      return { ...(map[path] || {}) };
+    }
+
+    function arrayTitle(path) {
+      return ({ metrics: "指標", skillBars: "能力條", jobs: "經歷", cases: "案例" })[path] || path;
+    }
+
+    function getPath(path) {
+      return path.split(".").reduce((obj, key) => obj?.[key], data);
+    }
+
+    function setPath(path, value) {
+      const keys = path.split(".");
+      const last = keys.pop();
+      const target = keys.reduce((obj, key) => obj[key], data);
+      target[last] = value;
+    }
+
+    function touch(message) {
+      status.textContent = message;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value).replace(/\n/g, " ");
+    }
+  </script>
+</body>
+</html>

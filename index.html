@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>履歷 Resume</title>
+  <link rel="preload" href="theme.js" as="script">
+  <link rel="preload" href="data.json" as="fetch" type="application/json">
+  <link rel="preload" href="myphoto.png" as="image">
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: #172326;
+      background: #eef2f1;
+      font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", Arial, sans-serif;
+      line-height: 1.6;
+      letter-spacing: 0;
+    }
+    .theme-control {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border: 1px solid rgba(130, 150, 145, .42);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .95);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .12);
+      font-size: 14px;
+    }
+    .theme-control label {
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .theme-control select {
+      width: min(56vw, 330px);
+      min-height: 34px;
+      border: 1px solid rgba(130, 150, 145, .55);
+      border-radius: 6px;
+      background: #fff;
+      color: #172326;
+      font: inherit;
+      padding: 4px 8px;
+    }
+    .resume-root {
+      min-height: 100vh;
+    }
+    .loading,
+    .error {
+      width: min(100% - 32px, 920px);
+      margin: 96px auto 0;
+      padding: 24px;
+      color: #56625f;
+      text-align: center;
+      background: rgba(255, 255, 255, .88);
+      border: 1px solid rgba(130, 150, 145, .32);
+      border-radius: 8px;
+    }
+    @media print {
+      .theme-control { display: none; }
+    }
+  </style>
+  <style id="themeStyle"></style>
+</head>
+<body>
+  <div class="theme-control">
+    <label for="themeSelect">風格</label>
+    <select id="themeSelect" aria-label="風格"></select>
+  </div>
+
+  <main id="resumeRoot" class="resume-root loading" aria-live="polite">正在讀取 data.json</main>
+
+  <script src="theme.js" defer></script>
+</body>
+</html>

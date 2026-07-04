@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>董志昌 Resume</title>
+  <style>
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", Arial, sans-serif;
+  line-height: 1.65;
+  letter-spacing: 0;
+  background: var(--bg);
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: var(--texture);
+  opacity: var(--texture-opacity, .45);
+}
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+h1, h2, h3, p { margin-top: 0; }
+h1 { font-size: clamp(2.2rem, 5vw, 4.7rem); line-height: 1.02; margin-bottom: 16px; }
+h2 { font-size: .95rem; margin-bottom: 14px; color: var(--accent); letter-spacing: 0; }
+h3 { font-size: 1.05rem; margin-bottom: 4px; }
+p { margin-bottom: 12px; }
+.page {
+  position: relative;
+  z-index: 1;
+  width: min(1140px, calc(100% - 36px));
+  margin: 0 auto;
+  padding: 34px 0 56px;
+}
+.photo {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: auto;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 8px;
+  background: #eef2f4;
+}
+.chip, .tag, .badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 7px 11px;
+  margin: 0 6px 8px 0;
+  font-size: .88rem;
+  border: 1px solid var(--line);
+  background: var(--soft);
+  color: var(--ink);
+}
+.muted { color: var(--muted); }
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-title::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: var(--line);
+}
+.contact p {
+  display: grid;
+  grid-template-columns: 78px 1fr;
+  gap: 10px;
+  margin: 0 0 8px;
+  word-break: break-word;
+}
+.contact span { color: var(--muted); }
+.metric strong { display: block; font-size: 1.5rem; line-height: 1.1; }
+.metric span { color: var(--muted); font-size: .88rem; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+th { color: var(--accent); font-size: .86rem; }
+@media (max-width: 820px) {
+  .page { width: min(100% - 24px, 720px); padding-top: 18px; }
+  h1 { font-size: 2.45rem; }
+  .contact p { grid-template-columns: 70px 1fr; }
+  table, thead, tbody, tr, th, td { display: block; }
+  thead { display: none; }
+  td { padding: 8px 0; }
+  td + td { border-top: 0; }
+}
+@media print {
+  body { background: #fff !important; color: #111; }
+  body::before { display: none; }
+  .page { width: 100%; padding: 0; }
+  .photo { width: auto; max-width: 100%; height: auto; max-height: 220px; }
+  a { text-decoration: none; }
+}
+
+
+:root {
+  --bg: #f4f6f8;
+  --ink: #1b2630;
+  --muted: #61707d;
+  --line: #d6dee6;
+  --soft: #eef4f7;
+  --paper: #fff;
+  --accent: #1f6f9b;
+  --accent-2: #c07f2b;
+  --texture: linear-gradient(90deg, rgba(31,111,155,.08) 1px, transparent 1px) 0 0 / 38px 38px;
+}
+.intro { display: grid; grid-template-columns: 280px 1fr; gap: 24px; align-items: end; margin-bottom: 24px; }
+.intro-card, .timeline, .block { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 18px 44px rgba(27,38,48,.09); padding: 22px; }
+.intro .photo { height: auto; aspect-ratio: auto; }
+.metric-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 16px; }
+.metric { background: var(--soft); border-radius: 8px; padding: 12px; }
+.timeline { position: relative; }
+.timeline::before { content: ""; position: absolute; left: 33px; top: 30px; bottom: 30px; width: 3px; background: var(--line); }
+.job { position: relative; margin-left: 44px; padding: 16px 16px 16px 20px; border-bottom: 1px solid var(--line); }
+.job:last-child { border-bottom: 0; }
+.job::before { content: ""; position: absolute; left: -40px; top: 24px; width: 15px; height: 15px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 6px #eaf3f8; }
+.job time { color: var(--accent-2); font-weight: 700; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 18px; }
+@media (max-width: 820px) { .intro, .grid, .metric-strip { grid-template-columns: 1fr; } }
+
+  </style>
+</head>
+<body>
+
+<main class="page">
+  <section class="intro">
+    <div class="intro-card">
+      <img class="photo" data-random-photo src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="董志昌 個人照片">
+    </div>
+    <div>
+      <h1>董志昌</h1>
+      <p class="muted">正職物理治療師 / 組長候選｜骨科徒手治療、自費復健服務、診所行政數位化</p>
+      <div class="metric-strip"><div class="metric"><strong>19+</strong><span>臨床復健年資</span></div><div class="metric"><strong>8+</strong><span>自費徒手經驗</span></div><div class="metric"><strong>6</strong><span>醫院與診所歷練</span></div><div class="metric"><strong>2026/10/01</strong><span>可上班日</span></div></div>
+    </div>
+  </section>
+  <section class="timeline">
+    <h2 class="section-title">工作經歷</h2>
+
+    <article class="job">
+      <time>96.03 - 96.06</time>
+      <h3>豐安醫院</h3>
+      <p>正職物理治療師</p>
+      <small>骨科 manual therapy</small>
+    </article>
+
+    <article class="job">
+      <time>96.07 - 104.07</time>
+      <h3>維弘復健科診所</h3>
+      <p>正職物理治療師</p>
+      <small>骨科、神經 manual therapy</small>
+    </article>
+
+    <article class="job">
+      <time>104.08 - 106.08</time>
+      <h3>晉康復健科診所</h3>
+      <p>正職物理治療師</p>
+      <small>骨科、神經 manual therapy</small>
+    </article>
+
+    <article class="job">
+      <time>106.11 - 112.03</time>
+      <h3>寰康復健診所</h3>
+      <p>正職物理治療師</p>
+      <small>骨科 manual therapy（含自費）</small>
+    </article>
+
+    <article class="job">
+      <time>112.08 - 113.03</time>
+      <h3>得安診所</h3>
+      <p>正職物理治療師</p>
+      <small>骨科 manual therapy（含自費）</small>
+    </article>
+
+    <article class="job">
+      <time>113.04 - 115.07</time>
+      <h3>世芳復健科診所</h3>
+      <p>正職物理治療師</p>
+      <small>骨科 manual therapy（含自費）</small>
+    </article>
+
+  </section>
+  <section class="grid">
+    <div class="block">
+      <h2 class="section-title">專業摘要</h2>
+      <p>具多年復健臨床經驗，主要服務骨科個案，熟悉徒手治療、術後復健與神經復健照護。重視治療安全、病患溝通與創傷後心理建設，協助個案安心完成復健歷程。</p><p>自費徒手治療累積 8 年以上，多數獲得正向回饋。工作期間能穩定配合排班，鮮少與病患或同事發生爭執，重視團隊合作與診所現場效率。</p><p>能以 Excel、Google Sheets 與 AI 工具整理診所行政流程，曾製作排班表、自費預約與收費表、震波預約表、病人量統計表、輔具庫存表、診所公告與衛教單。</p>
+    </div>
+    <div class="block">
+      <h2 class="section-title">專長與聯絡</h2>
+      <span class="chip">骨科 manual therapy</span><span class="chip">神經復健 manual therapy</span><span class="chip">自費徒手治療</span><span class="chip">術後復健溝通</span><span class="chip">病患心理建設</span><span class="chip">台語與國語溝通</span>
+      <div class="contact"><p><span>電話</span>0921-777-911</p><p><span>Email</span>johsok@gmail.com</p><p><span>地址</span>新北市永和區中正路117號</p><p><span>學歷</span>長庚大學 物理治療學系</p><p><span>證照</span>物理治療師證照</p><p><span>語言</span>台語、國語</p></div>
+    </div>
+  </section>
+</main>
+
+
+<script src="resume_assets/resume_random_photo.js?v=github-pages-2"></script>
+<script src="resume_assets/resume_data_loader.js"></script>
+
+</body>
+</html>

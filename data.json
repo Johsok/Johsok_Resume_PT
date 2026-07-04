@@ -1,0 +1,170 @@
+{
+  "profile": {
+    "name": "董志昌",
+    "role": "正職物理治療師 / 組長候選",
+    "tagline": "骨科徒手治療、自費復健服務、診所行政數位化"
+  },
+  "contact": {
+    "phone": "0921-777-911",
+    "email": "johsok@gmail.com",
+    "address": "新北市永和區中正路117號",
+    "education": "長庚大學 物理治療學系",
+    "license": "物理治療師證照",
+    "language": "台語、國語"
+  },
+  "application": {
+    "desiredPosition": "正職 物理治療師 組長",
+    "salary": "75k 以上",
+    "availableDate": "2026/10/01",
+    "gender": "男",
+    "birthdate": "民國71年11月25日",
+    "heightWeight": "170cm / 67kg",
+    "militaryMarriage": "役畢 / 單身"
+  },
+  "labels": {
+    "phone": "電話",
+    "email": "Email",
+    "address": "地址",
+    "education": "學歷",
+    "license": "證照",
+    "language": "語言"
+  },
+  "sectionTitles": {
+    "summary": "專業摘要",
+    "application": "應徵資訊",
+    "skills": "臨床專長",
+    "tools": "行政與 AI 工具",
+    "toolsShort": "工具",
+    "jobs": "工作經歷",
+    "contact": "聯絡資料",
+    "profile": "履歷資料矩陣",
+    "skillMatrix": "技能矩陣",
+    "cases": "行政流程案例",
+    "educationLicense": "學歷與證照"
+  },
+  "metrics": [
+    {
+      "value": "19+",
+      "label": "臨床復健年資"
+    },
+    {
+      "value": "8+",
+      "label": "自費徒手經驗"
+    },
+    {
+      "value": "6",
+      "label": "醫院與診所歷練"
+    },
+    {
+      "value": "2026/10/01",
+      "label": "可上班日"
+    }
+  ],
+  "summary": [
+    "在復健職場工作10多年，所接觸到的病人主要是骨科為主，這段工作期間在職場上也慢慢學習到如何與同事和病人相處，和病人的溝通和創傷後的心理建設尤為重要，大多病人對於自己的病情和進展情況相當關注，都希望能盡快好轉回到職場工作或是原本健康的生活，對於病人的徒手治療，除了追求較佳的療效外，更應以安全為原則，讓病人能在復健的過程中更加安心。以往工作期間，鮮少和病人及同事間起爭執，對於安排的班都能盡力去配合，也極少要求換班；陸續上了不少專業課程，樂於病人骨科疾病突破性治療，不知不覺自費徒手已經做了8年以上，大多都得到正向回饋。曾用Excel、Google　Sheet自製排班表、自費預約表、自費收費表、震波預約表、病人量統計表、輔具庫存表等等表格，並以AI工具(ChatGPT、Gemini、Cluade等)來製作診所公告、衛教單等，化繁為簡以利整體行政業務進行。在物理治療師全聯會求職網看到貴 診所有正職PT缺，希望貴 診所能給我面試的機會，不勝感激。"
+  ],
+  "clinicalSkills": [
+    "骨科 manual therapy",
+    "神經復健 manual therapy",
+    "自費徒手治療",
+    "術後復健溝通",
+    "病患心理建設",
+    "台語與國語溝通"
+  ],
+  "toolsShort": [
+    "Excel 排班與統計",
+    "Google Sheets 表單流程",
+    "ChatGPT",
+    "Gemini",
+    "Claude",
+    "診所公告與衛教單"
+  ],
+  "toolsFull": [
+    "Excel 排班與統計",
+    "Google Sheets 表單流程",
+    "ChatGPT",
+    "Gemini",
+    "Claude",
+    "診所公告與衛教單",
+    "排班表",
+    "自費預約表",
+    "自費收費表",
+    "震波預約表",
+    "病人量統計表",
+    "輔具庫存表"
+  ],
+  "skillBars": [
+    {
+      "label": "骨科徒手治療",
+      "width": "96%"
+    },
+    {
+      "label": "自費徒手服務",
+      "width": "90%"
+    },
+    {
+      "label": "神經復健處置",
+      "width": "84%"
+    },
+    {
+      "label": "病患溝通與團隊協作",
+      "width": "88%"
+    }
+  ],
+  "jobs": [
+    {
+      "period": "96.03 - 96.06",
+      "company": "豐安醫院",
+      "title": "正職物理治療師",
+      "detail": "骨科 manual therapy"
+    },
+    {
+      "period": "96.07 - 104.07",
+      "company": "維弘復健科診所",
+      "title": "正職物理治療師",
+      "detail": "骨科、神經manual therapy"
+    },
+    {
+      "period": "104.08 - 106.08",
+      "company": "晉康復健科診所",
+      "title": "正職物理治療師",
+      "detail": "骨科、神經manual therapy"
+    },
+    {
+      "period": "106.11 - 112.03",
+      "company": "寰康復健診所",
+      "title": "正職物理治療師",
+      "detail": "骨科 manual therapy（含自費）"
+    },
+    {
+      "period": "112.08 - 113.03",
+      "company": "得安診所",
+      "title": "正職物理治療師",
+      "detail": "骨科 manual therapy（含自費）"
+    },
+    {
+      "period": "113.04 - 115.07",
+      "company": "世芳復健科診所",
+      "title": "正職物理治療師",
+      "detail": "骨科 manual therapy（含自費）"
+    }
+  ],
+  "cases": [
+    {
+      "title": "衛教與公告",
+      "text": "以 AI 工具協助產出診所公告、疾病衛教與病患溝通素材。"
+    },
+    {
+      "title": "排班與預約",
+      "text": "自製排班表、自費預約表與震波預約表，協助現場流程更清楚。"
+    },
+    {
+      "title": "收費與統計",
+      "text": "整理自費收費表、病人量統計表，讓行政資料更易追蹤。"
+    },
+    {
+      "title": "庫存管理",
+      "text": "建立輔具庫存表，支援診所日常物品盤點與補貨。"
+    }
+  ]
+}
