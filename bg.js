@@ -40,6 +40,7 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root
   position: absolute;
   inset: -18%;
   pointer-events: none;
+  will-change: transform, opacity, background-position;
 }
 .bg-galaxy {
   background:
@@ -72,10 +73,28 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root
   filter: blur(18px);
   animation: bgSlide 16s ease-in-out infinite alternate;
 }
+.bg-aurora::after {
+  background:
+    radial-gradient(ellipse at 28% 45%, rgba(99, 255, 208, .22), transparent 28%),
+    radial-gradient(ellipse at 72% 58%, rgba(116, 153, 255, .20), transparent 30%);
+  filter: blur(24px);
+  animation: bgFloat 12s ease-in-out infinite alternate;
+}
 .bg-gradient {
   background: linear-gradient(120deg, #f7d9dc, #d9eefc, #dff2d8, #efd7f6);
   background-size: 300% 300%;
   animation: bgGradient 18s ease infinite;
+}
+.bg-gradient::before {
+  background:
+    radial-gradient(circle at 18% 28%, rgba(255, 255, 255, .46), transparent 18%),
+    radial-gradient(circle at 78% 64%, rgba(142, 198, 255, .28), transparent 22%),
+    radial-gradient(circle at 54% 22%, rgba(255, 179, 221, .30), transparent 18%);
+  animation: bgFloat 14s ease-in-out infinite alternate;
+}
+.bg-gradient::after {
+  background: linear-gradient(100deg, transparent 20%, rgba(255,255,255,.22), transparent 54%);
+  animation: bgSlide 10s ease-in-out infinite alternate;
 }
 .bg-bubbles {
   background: #f6fbff;
@@ -89,6 +108,12 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root
   filter: blur(3px);
   animation: bgFloat 15s ease-in-out infinite alternate;
 }
+.bg-bubbles::after {
+  background:
+    radial-gradient(circle, rgba(111, 164, 255, .22) 0 8px, transparent 9px) 0 0 / 86px 86px,
+    radial-gradient(circle, rgba(255, 182, 216, .26) 0 6px, transparent 7px) 32px 46px / 118px 118px;
+  animation: bgBubbleRise 18s linear infinite;
+}
 .bg-stars {
   background: linear-gradient(180deg, #101827, #1d2636);
 }
@@ -96,7 +121,15 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root
   background:
     radial-gradient(circle, rgba(255,255,255,.88) 0 1px, transparent 1.7px) 4px 9px / 64px 64px,
     radial-gradient(circle, rgba(204,229,255,.74) 0 1px, transparent 1.8px) 24px 18px / 96px 96px;
-  animation: bgTwinkle 4.5s ease-in-out infinite alternate;
+  animation: bgStarMove 22s linear infinite;
+}
+.bg-stars::after {
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, .55), transparent 2%),
+    radial-gradient(circle at 74% 62%, rgba(180, 211, 255, .45), transparent 3%),
+    linear-gradient(115deg, transparent 40%, rgba(255,255,255,.18), transparent 48%);
+  opacity: .7;
+  animation: bgTwinkle 4.5s ease-in-out infinite alternate, bgSlide 14s ease-in-out infinite alternate;
 }
 .bg-waves {
   background: linear-gradient(180deg, #eaf7fb, #dff2ee);
@@ -107,12 +140,22 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root
   transform: translateY(0);
   animation: bgWave 12s ease-in-out infinite alternate;
 }
+.bg-waves::after {
+  background:
+    repeating-linear-gradient(168deg, transparent 0 18px, rgba(61, 145, 171, .12) 19px 21px, transparent 22px 42px);
+  filter: blur(1px);
+  animation: bgWaterFlow 15s linear infinite;
+}
 .bg-rain {
   background: linear-gradient(180deg, #f6f8fb, #e9eef7);
 }
 .bg-rain::before {
   background: repeating-linear-gradient(112deg, rgba(77, 111, 160, .18) 0 1px, transparent 1px 18px);
   animation: bgRain 9s linear infinite;
+}
+.bg-rain::after {
+  background: linear-gradient(180deg, rgba(255,255,255,.28), transparent 58%);
+  animation: bgRainGlow 7s ease-in-out infinite alternate;
 }
 .bg-grid {
   background: #faf8f2;
@@ -123,6 +166,13 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root
     linear-gradient(0deg, rgba(78, 89, 103, .10) 1px, transparent 1px) 0 0 / 32px 32px,
     radial-gradient(circle at 22% 28%, rgba(207, 138, 60, .12), transparent 20%);
   animation: bgDrift 30s linear infinite;
+}
+.bg-grid::after {
+  background:
+    linear-gradient(45deg, transparent 42%, rgba(49, 80, 112, .10) 43% 45%, transparent 46%),
+    linear-gradient(-45deg, transparent 42%, rgba(207, 138, 60, .10) 43% 45%, transparent 46%);
+  background-size: 120px 120px;
+  animation: bgGridShift 20s linear infinite;
 }
 .bg-mist {
   background: linear-gradient(135deg, #fff7e8, #eaf4ff 48%, #f4ecff);
@@ -135,6 +185,13 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root
   filter: blur(20px);
   animation: bgFloat 18s ease-in-out infinite alternate;
 }
+.bg-mist::after {
+  background:
+    linear-gradient(95deg, transparent 16%, rgba(255,255,255,.48), transparent 48%),
+    linear-gradient(145deg, transparent 22%, rgba(255, 224, 179, .26), transparent 58%);
+  filter: blur(18px);
+  animation: bgMistFlow 16s ease-in-out infinite alternate;
+}
 .bg-dust {
   background: linear-gradient(160deg, #18202f, #263648);
 }
@@ -143,6 +200,13 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root
     radial-gradient(circle, rgba(255,255,255,.75) 0 1px, transparent 1.6px) 0 0 / 42px 42px,
     radial-gradient(circle, rgba(255,227,167,.52) 0 1px, transparent 1.7px) 18px 22px / 74px 74px;
   animation: bgDust 14s linear infinite;
+}
+.bg-dust::after {
+  background:
+    radial-gradient(circle at 22% 72%, rgba(255, 214, 148, .20), transparent 12%),
+    radial-gradient(circle at 78% 28%, rgba(194, 220, 255, .18), transparent 14%);
+  filter: blur(8px);
+  animation: bgFloat 10s ease-in-out infinite alternate;
 }
 @keyframes bgDrift {
   from { transform: translate3d(0, 0, 0); }
@@ -167,13 +231,37 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root
   from { opacity: .55; transform: scale(1); }
   to { opacity: .95; transform: scale(1.02); }
 }
+@keyframes bgStarMove {
+  from { transform: translate3d(0, 0, 0); opacity: .72; }
+  to { transform: translate3d(-54px, -38px, 0); opacity: 1; }
+}
+@keyframes bgBubbleRise {
+  from { transform: translate3d(0, 36px, 0) scale(1); opacity: .58; }
+  to { transform: translate3d(-24px, -74px, 0) scale(1.04); opacity: .86; }
+}
 @keyframes bgWave {
   from { transform: translateY(0) scale(1); }
   to { transform: translateY(-26px) scale(1.03); }
 }
+@keyframes bgWaterFlow {
+  from { transform: translate3d(-30px, 18px, 0); }
+  to { transform: translate3d(46px, -20px, 0); }
+}
 @keyframes bgRain {
   from { transform: translate3d(0, -40px, 0); }
   to { transform: translate3d(-40px, 40px, 0); }
+}
+@keyframes bgRainGlow {
+  from { transform: translateY(-18px); opacity: .35; }
+  to { transform: translateY(26px); opacity: .78; }
+}
+@keyframes bgGridShift {
+  from { transform: translate3d(0, 0, 0) rotate(0deg); }
+  to { transform: translate3d(-60px, -60px, 0) rotate(.01deg); }
+}
+@keyframes bgMistFlow {
+  from { transform: translate3d(-5%, -2%, 0) scale(1.02); opacity: .58; }
+  to { transform: translate3d(5%, 3%, 0) scale(1.08); opacity: .88; }
 }
 @keyframes bgDust {
   from { transform: translate3d(0, 0, 0); opacity: .65; }
