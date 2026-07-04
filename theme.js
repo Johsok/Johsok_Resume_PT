@@ -655,8 +655,30 @@ p { margin-bottom: 12px; }
 
   const themes = [
     {
+      id: "default",
+      label: "00_預設表格",
+      className: "theme-default",
+      css: `
+:root {
+  --theme-bg: #eef2f1;
+  --theme-ink: #111;
+  --theme-muted: #555;
+  --theme-line: #111;
+  --theme-soft: #f6f6f6;
+  --theme-paper: #fff;
+  --theme-card: #fff;
+  --theme-accent: #111;
+  --theme-accent-2: #333;
+  --theme-accent-3: #555;
+  --theme-shadow: none;
+  --theme-texture: none;
+}
+`,
+      render: renderAts
+    },
+    {
       id: "dashboard",
-      label: "01_魔幻森林",
+      label: "01_資訊儀表",
       className: "theme-dashboard",
       css: `
 :root {
@@ -679,7 +701,7 @@ p { margin-bottom: 12px; }
     },
     {
       id: "split",
-      label: "02_星河雙欄",
+      label: "02_左右雙欄",
       className: "theme-split",
       css: `
 :root {
@@ -702,7 +724,7 @@ p { margin-bottom: 12px; }
     },
     {
       id: "timeline",
-      label: "03_時光軌跡",
+      label: "03_職涯年表",
       className: "theme-timeline",
       css: `
 :root {
@@ -724,7 +746,7 @@ p { margin-bottom: 12px; }
     },
     {
       id: "modular",
-      label: "04_晶格卡片",
+      label: "04_模組卡片",
       className: "theme-modular",
       css: `
 :root {
@@ -746,7 +768,7 @@ p { margin-bottom: 12px; }
     },
     {
       id: "editorial",
-      label: "05_晨光封面",
+      label: "05_封面履歷",
       className: "theme-editorial",
       css: `
 :root {
@@ -791,7 +813,7 @@ p { margin-bottom: 12px; }
     },
     {
       id: "classic",
-      label: "07_經典側欄",
+      label: "07_側欄履歷",
       className: "theme-classic",
       css: `
 :root {
@@ -813,7 +835,7 @@ p { margin-bottom: 12px; }
     },
     {
       id: "bento",
-      label: "08_拼圖方格",
+      label: "08_方格總覽",
       className: "theme-bento",
       css: `
 :root {
@@ -836,7 +858,7 @@ p { margin-bottom: 12px; }
     },
     {
       id: "ats",
-      label: "09_精簡表格",
+      label: "09_列印表格",
       className: "theme-ats",
       css: `
 :root {
@@ -928,8 +950,7 @@ p { margin-bottom: 12px; }
 
   function getInitialThemeId() {
     const themeParam = new URLSearchParams(window.location.search).get("theme");
-    const storedTheme = localStorage.getItem(themeKey);
-    const selected = themeParam || storedTheme || themes[0].id;
+    const selected = themeParam || themes[0].id;
     return themes.some(function (theme) { return theme.id === selected; }) ? selected : themes[0].id;
   }
 
