@@ -594,75 +594,132 @@ p { margin-bottom: 12px; }
   background: var(--theme-card);
   border: 1px solid var(--theme-line);
 }
-.focus-sheet {
+.brutal-sheet {
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
-.focus-top {
+.brutal-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
-  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  gap: 18px;
   align-items: stretch;
 }
-.focus-nameplate {
+.brutal-nameplate {
+  position: relative;
   display: grid;
   align-content: end;
-  min-height: 300px;
+  min-height: 320px;
   padding: 30px;
-  color: #fff;
+  color: #111;
   background:
-    linear-gradient(135deg, rgba(255,255,255,.16), transparent 42%),
-    linear-gradient(145deg, var(--theme-accent), var(--theme-accent-3));
-  border-radius: 8px;
-  box-shadow: var(--theme-shadow);
+    linear-gradient(135deg, rgba(255,255,255,.26), transparent 34%),
+    var(--theme-accent);
+  border: 4px solid #111;
+  border-radius: 0;
+  box-shadow: 12px 12px 0 #111;
+  overflow: hidden;
 }
-.focus-nameplate .role,
-.focus-nameplate .muted {
-  color: rgba(255, 255, 255, .84);
+.brutal-nameplate::before {
+  content: "RESUME";
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 4px 10px;
+  color: #fff;
+  background: #111;
+  border: 3px solid #111;
+  font-weight: 900;
+  letter-spacing: 0;
 }
-.focus-photo {
-  padding: 14px;
+.brutal-nameplate h1 {
+  font-size: clamp(2.7rem, 7vw, 5.6rem);
+  line-height: .95;
+  margin-bottom: 18px;
+}
+.brutal-nameplate .role {
+  display: inline-block;
+  width: fit-content;
+  padding: 5px 10px;
+  color: #fff;
+  background: #111;
+}
+.brutal-nameplate .muted {
+  color: #111;
+  font-weight: 700;
+}
+.brutal-photo {
+  padding: 12px;
   background: var(--theme-paper);
-  border: 1px solid var(--theme-line);
-  border-radius: 8px;
-  box-shadow: var(--theme-shadow);
+  border: 4px solid #111;
+  border-radius: 0;
+  box-shadow: 10px 10px 0 var(--theme-accent-3);
+  transform: rotate(1deg);
 }
-.focus-photo .theme-photo {
+.brutal-photo .theme-photo {
   height: 100%;
   min-height: 272px;
+  border-radius: 0;
+  border: 3px solid #111;
+  padding: 0;
 }
-.focus-ribbon {
+.brutal-strip {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 12px;
 }
-.focus-ribbon .metric {
-  color: #fff;
-  background: rgba(255, 255, 255, .14);
-  border-left-color: rgba(255, 255, 255, .54);
+.brutal-strip .metric {
+  color: #111;
+  background: #fff;
+  border: 3px solid #111;
+  border-left-width: 10px;
+  box-shadow: 6px 6px 0 #111;
 }
-.focus-ribbon .metric span {
-  color: rgba(255, 255, 255, .80);
+.brutal-strip .metric span {
+  color: #111;
+  font-weight: 800;
 }
-.focus-main {
+.brutal-main {
   display: grid;
-  grid-template-columns: 1.1fr .9fr;
-  gap: 16px;
+  grid-template-columns: 1.12fr .88fr;
+  gap: 18px;
   align-items: start;
 }
-.focus-stack {
+.brutal-stack {
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
-.focus-section {
+.brutal-block {
   padding: 20px;
   background: var(--theme-paper);
-  border: 1px solid var(--theme-line);
-  border-radius: 8px;
-  box-shadow: var(--theme-shadow);
+  border: 4px solid #111;
+  border-radius: 0;
+  box-shadow: 8px 8px 0 #111;
 }
-.focus-section.accent {
-  border-top: 5px solid var(--theme-accent-2);
+.brutal-block.accent {
+  background: var(--theme-card);
+}
+.brutal-block.pop {
+  background: var(--theme-soft);
+  box-shadow: 8px 8px 0 var(--theme-accent-3);
+}
+.brutal-block .section-title {
+  color: #111;
+  text-transform: uppercase;
+  border-bottom: 4px solid #111;
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+}
+.brutal-block .job,
+.brutal-block .bar {
+  border: 3px solid #111;
+  border-radius: 0;
+  box-shadow: 4px 4px 0 var(--theme-accent-2);
+}
+.brutal-block .chip {
+  border: 2px solid #111;
+  border-radius: 0;
+  background: #fff;
+  font-weight: 800;
 }
 @media (max-width: 900px) {
   .resume-page { width: min(100% - 24px, 720px); padding-top: 50px; }
@@ -675,8 +732,8 @@ p { margin-bottom: 12px; }
   .matrix-head,
   .classic,
   .portfolio-head,
-  .focus-top,
-  .focus-main {
+  .brutal-hero,
+  .brutal-main {
     grid-template-columns: 1fr;
   }
   .identity,
@@ -689,7 +746,7 @@ p { margin-bottom: 12px; }
   .matrix-grid,
   .facts,
   .metric-band,
-  .focus-ribbon,
+  .brutal-strip,
   .portfolio-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -702,7 +759,10 @@ p { margin-bottom: 12px; }
   .tile {
     margin-bottom: 14px;
   }
-  .focus-photo .theme-photo {
+  .brutal-photo {
+    transform: none;
+  }
+  .brutal-photo .theme-photo {
     height: auto;
     min-height: 0;
   }
@@ -720,14 +780,14 @@ p { margin-bottom: 12px; }
   .matrix-grid,
   .facts,
   .metric-band,
-  .focus-ribbon,
+  .brutal-strip,
   .portfolio-grid {
     grid-template-columns: 1fr;
   }
   .dash h1,
   .split h1,
   .editorial h1,
-  .focus-nameplate h1,
+  .brutal-nameplate h1,
   .portfolio h1 {
     font-size: 2.35rem;
   }
@@ -963,26 +1023,38 @@ p { margin-bottom: 12px; }
     },
     {
       id: "ats",
-      label: "09_焦點卡片",
-      className: "theme-focus",
+      label: "09_野獸派",
+      className: "theme-brutalist",
       css: `
 :root {
-  --theme-bg: #f6f2ec;
-  --theme-ink: #20242a;
-  --theme-muted: #6d6a65;
-  --theme-line: #e0d5c7;
-  --theme-soft: #f2e8dc;
-  --theme-paper: rgba(255, 255, 255, .97);
-  --theme-card: #fffaf3;
-  --theme-accent: #7d3f3a;
-  --theme-accent-2: #c7923f;
-  --theme-accent-3: #223d57;
-  --theme-shadow: 0 18px 44px rgba(50, 36, 27, .13);
-  --theme-texture: radial-gradient(circle at 16% 18%, rgba(199,146,63,.14), transparent 24%),
-                   linear-gradient(135deg, rgba(34,61,87,.08), transparent 56%);
+  --theme-bg: #fff7d6;
+  --theme-ink: #111;
+  --theme-muted: #2b2b2b;
+  --theme-line: #111;
+  --theme-soft: #ffef5a;
+  --theme-paper: #ffffff;
+  --theme-card: #ff5f2e;
+  --theme-accent: #ffdf20;
+  --theme-accent-2: #ff4d00;
+  --theme-accent-3: #1b5cff;
+  --theme-shadow: 10px 10px 0 #111;
+  --theme-texture: linear-gradient(90deg, rgba(17,17,17,.10) 2px, transparent 2px) 0 0 / 32px 32px,
+                   linear-gradient(0deg, rgba(17,17,17,.10) 2px, transparent 2px) 0 0 / 32px 32px;
+}
+.theme-brutalist {
+  --theme-ink: #111;
+  --theme-muted: #2b2b2b;
+  --theme-line: #111;
+  --theme-soft: #ffef5a;
+  --theme-paper: #ffffff;
+  --theme-card: #ff5f2e;
+  --theme-accent: #ffdf20;
+  --theme-accent-2: #ff4d00;
+  --theme-accent-3: #1b5cff;
+  --theme-shadow: 10px 10px 0 #111;
 }
 `,
-      render: renderFocus
+      render: renderBrutalist
     },
     {
       id: "clinical",
@@ -1533,40 +1605,40 @@ self.onmessage = async function (event) {
     `;
   }
 
-  function renderFocus(data) {
+  function renderBrutalist(data) {
     return `
       <div class="resume-page">
-        <section class="focus-sheet">
-          <section class="focus-top">
-            <div class="focus-nameplate">
+        <section class="brutal-sheet">
+          <section class="brutal-hero">
+            <div class="brutal-nameplate">
               ${identity(data)}
-              <div class="focus-ribbon">${metrics(data).map(metricCard).join("")}</div>
+              <div class="brutal-strip">${metrics(data).map(metricCard).join("")}</div>
             </div>
-            <div class="focus-photo">
+            <div class="brutal-photo">
               ${photo(data)}
             </div>
           </section>
-          <section class="focus-main">
-            <div class="focus-stack">
-              <article class="focus-section accent">
+          <section class="brutal-main">
+            <div class="brutal-stack">
+              <article class="brutal-block accent">
                 ${sectionTitle(data, "summary")}
                 ${summary(data)}
               </article>
-              <article class="focus-section">
+              <article class="brutal-block">
                 ${sectionTitle(data, "jobs")}
                 ${jobGrid(data.jobs)}
               </article>
             </div>
-            <aside class="focus-stack">
-              <article class="focus-section">
+            <aside class="brutal-stack">
+              <article class="brutal-block pop">
                 ${sectionTitle(data, "contact")}
                 ${contactList(data)}
               </article>
-              <article class="focus-section accent">
+              <article class="brutal-block">
                 ${sectionTitle(data, "skills")}
                 ${skillMeters(data)}
               </article>
-              <article class="focus-section">
+              <article class="brutal-block accent">
                 ${sectionTitle(data, "toolsShort")}
                 ${chips(data.toolsShort)}
               </article>
