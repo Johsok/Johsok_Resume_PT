@@ -40,7 +40,7 @@
     { id: "contour", label: "06_動態等高線地圖", className: "bg-contour" },
     { id: "lightRain", label: "07_光點雨幕", className: "bg-light-rain" },
     { id: "pulse", label: "08_呼吸式醫療光圈", className: "bg-pulse" },
-    { id: "orbit", label: "09_星球軌道儀表盤", className: "bg-orbit" },
+    { id: "cyberpunk", label: "09_賽博龐克", className: "bg-cyberpunk" },
     { id: "magnetic", label: "10_互動滑鼠磁場", className: "bg-magnetic" },
     { id: "aurora", label: "11_極光帷幕", className: "bg-aurora" },
     { id: "bubbles", label: "12_漂浮光泡", className: "bg-bubbles" },
@@ -243,20 +243,23 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-bento
     radial-gradient(circle, rgba(79, 169, 138, .12) 0 1px, transparent 1.5px) 0 0 / 52px 52px;
   animation: bgDrift 28s linear infinite;
 }
-.bg-orbit {
-  background: linear-gradient(150deg, #050710, #111827 50%, #17241f);
+.bg-cyberpunk {
+  background: linear-gradient(180deg, #050611, #0b1024 48%, #160821);
 }
-.bg-orbit::before {
+.bg-cyberpunk::before {
   background:
-    radial-gradient(circle, rgba(255,255,255,.78) 0 1px, transparent 1.6px) 0 0 / 58px 58px,
-    radial-gradient(circle, rgba(185,220,255,.52) 0 1px, transparent 1.6px) 24px 18px / 92px 92px;
-  animation: bgDust 16s linear infinite;
+    linear-gradient(90deg, rgba(0, 245, 255, .16) 1px, transparent 1px) 0 0 / 56px 56px,
+    linear-gradient(0deg, rgba(255, 42, 191, .12) 1px, transparent 1px) 0 0 / 56px 56px,
+    repeating-linear-gradient(180deg, rgba(255,255,255,.035) 0 1px, transparent 1px 8px);
+  animation: bgCyberGrid 10s linear infinite;
 }
-.bg-orbit::after {
+.bg-cyberpunk::after {
   background:
-    conic-gradient(from 0deg at 50% 50%, transparent, rgba(117, 183, 255, .16), transparent 30%, rgba(107, 207, 159, .12), transparent 58%);
-  filter: blur(8px);
-  animation: bgSpin 42s linear infinite;
+    radial-gradient(circle at 14% 42%, rgba(0, 245, 255, .34), transparent 20%),
+    radial-gradient(circle at 86% 58%, rgba(255, 42, 191, .30), transparent 22%),
+    linear-gradient(110deg, transparent 26%, rgba(255,230,109,.14), transparent 54%);
+  filter: blur(12px);
+  animation: bgPrismSweep 7.5s ease-in-out infinite alternate;
 }
 .bg-magnetic {
   background: linear-gradient(145deg, #071015, #172026 50%, #111c1a);
@@ -400,6 +403,10 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-bento
 @keyframes bgPrismSweep {
   from { transform: translate3d(-6%, -2%, 0) skewX(-8deg); opacity: .62; }
   to { transform: translate3d(7%, 3%, 0) skewX(7deg); opacity: .94; }
+}
+@keyframes bgCyberGrid {
+  from { transform: translate3d(0, 0, 0); opacity: .72; }
+  to { transform: translate3d(0, 56px, 0); opacity: .95; }
 }
 @keyframes bgFloat {
   from { transform: translate3d(-2%, -1%, 0) scale(1); }
@@ -561,7 +568,7 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-bento
   }
 
   function createScene(id) {
-    stars = makeStars(id === "stars" ? 520 : id === "dust" || id === "orbit" ? 680 : id === "network" || id === "magnetic" ? 240 : 180);
+    stars = makeStars(id === "stars" ? 520 : id === "dust" ? 680 : id === "network" || id === "magnetic" || id === "cyberpunk" ? 240 : 180);
     particles = makeParticles(id);
     meteors = [];
   }
@@ -589,7 +596,7 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-bento
       contour: 58,
       lightRain: 170,
       pulse: 52,
-      orbit: 260,
+      cyberpunk: 120,
       magnetic: 150,
       aurora: 28,
       bubbles: 46,
@@ -626,7 +633,7 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-bento
       contour: drawContour,
       lightRain: drawLightRain,
       pulse: drawPulse,
-      orbit: drawOrbitDashboard,
+      cyberpunk: drawCyberpunk,
       magnetic: drawMagnetic,
       aurora: drawAurora,
       bubbles: drawBubbles,
@@ -739,21 +746,24 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-bento
   function drawPrism(time) {
     clearWithGradient("#fbfcff", "#eef6f1");
     ctx.globalCompositeOperation = "screen";
-    for (let band = 0; band < 7; band += 1) {
-      const x = ((time * (34 + band * 5) + band * 190) % (width + 520)) - 260;
-      const y = height * (.16 + band * .12);
-      const strip = ctx.createLinearGradient(x - 160, y, x + 260, y + 80);
-      strip.addColorStop(0, "rgba(255,255,255,0)");
-      strip.addColorStop(.35, band % 3 === 0 ? "rgba(91, 168, 224, .22)" : "rgba(255,255,255,.40)");
-      strip.addColorStop(.62, band % 3 === 1 ? "rgba(224, 164, 94, .18)" : "rgba(101, 190, 158, .16)");
-      strip.addColorStop(1, "rgba(255,255,255,0)");
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(-.34 + band * .025);
-      ctx.fillStyle = strip;
-      ctx.fillRect(-180, -34, 420, 72);
-      ctx.restore();
-    }
+    [width * .08, width * .92].forEach(function (sideX, sideIndex) {
+      for (let band = 0; band < 7; band += 1) {
+        const side = sideIndex === 0 ? -1 : 1;
+        const y = ((time * (42 + band * 6) + band * 120) % (height + 220)) - 110;
+        const x = sideX + Math.sin(time * .8 + band) * 32 * side;
+        const strip = ctx.createLinearGradient(x - 170 * side, y - 70, x + 210 * side, y + 110);
+        strip.addColorStop(0, "rgba(255,255,255,0)");
+        strip.addColorStop(.34, band % 3 === 0 ? "rgba(91, 168, 224, .34)" : "rgba(255,255,255,.52)");
+        strip.addColorStop(.64, band % 3 === 1 ? "rgba(224, 164, 94, .26)" : "rgba(101, 190, 158, .24)");
+        strip.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(side * (.52 + band * .025));
+        ctx.fillStyle = strip;
+        ctx.fillRect(-180, -42, 460, 86);
+        ctx.restore();
+      }
+    });
     ctx.globalCompositeOperation = "source-over";
     drawSoftParticles(time, ["rgba(255,255,255,.24)", "rgba(85,164,206,.10)", "rgba(213,150,93,.10)"]);
   }
@@ -762,17 +772,18 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-bento
     clearWithGradient("#071018", "#201e27");
     drawMovingStars(time, .22);
     const shapes = [
-      { x: width * .23, y: height * .32, s: 78, c: "rgba(113, 225, 200, .52)", p: .2 },
-      { x: width * .76, y: height * .34, s: 92, c: "rgba(227, 192, 116, .46)", p: 1.6 },
-      { x: width * .34, y: height * .72, s: 64, c: "rgba(148, 184, 255, .42)", p: 2.5 },
-      { x: width * .66, y: height * .72, s: 58, c: "rgba(116, 215, 163, .38)", p: 3.1 }
+      { x: width * .08, y: height * .24, s: 86, c: "rgba(113, 225, 200, .62)", p: .2 },
+      { x: width * .15, y: height * .67, s: 62, c: "rgba(148, 184, 255, .50)", p: 2.5 },
+      { x: width * .92, y: height * .28, s: 94, c: "rgba(227, 192, 116, .58)", p: 1.6 },
+      { x: width * .84, y: height * .72, s: 68, c: "rgba(116, 215, 163, .50)", p: 3.1 }
     ];
 
     shapes.forEach(function (shape, index) {
       drawWireCube(shape.x, shape.y, shape.s, time * (.55 + index * .09) + shape.p, shape.c);
     });
 
-    drawWireOrb(centerX, centerY, Math.min(width, height) * .16, time);
+    drawWireOrb(width * .11, height * .48, Math.min(width, height) * .13, time);
+    drawWireOrb(width * .89, height * .52, Math.min(width, height) * .13, -time);
   }
 
   function drawContour(time) {
@@ -821,17 +832,16 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-bento
     clearWithGradient("#f7fbf7", "#edf6f3");
     drawSoftParticles(time, ["rgba(76,184,143,.10)", "rgba(80,142,195,.08)", "rgba(221,172,92,.08)"]);
     const centers = [
-      { x: width * .22, y: height * .32, p: .2 },
-      { x: width * .72, y: height * .28, p: 1.8 },
-      { x: width * .34, y: height * .72, p: 3.1 },
-      { x: width * .78, y: height * .70, p: 4.4 },
-      { x: centerX, y: centerY, p: 5.2 }
+      { x: width * .08, y: height * .24, p: .2 },
+      { x: width * .14, y: height * .62, p: 1.4 },
+      { x: width * .92, y: height * .30, p: 2.6 },
+      { x: width * .84, y: height * .74, p: 3.8 }
     ];
 
     centers.forEach(function (center, index) {
       for (let ring = 0; ring < 4; ring += 1) {
-        const wave = (time * 48 + ring * 44 + index * 18) % 190;
-        const alpha = .28 * (1 - wave / 190);
+        const wave = (time * 62 + ring * 48 + index * 24) % 230;
+        const alpha = .34 * (1 - wave / 230);
         ctx.beginPath();
         ctx.arc(center.x, center.y, wave + 12, 0, Math.PI * 2);
         ctx.strokeStyle = `rgba(60, 160, 128, ${alpha.toFixed(3)})`;
@@ -843,36 +853,81 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-bento
     });
   }
 
-  function drawOrbitDashboard(time) {
-    clearWithGradient("#030610", "#111b25");
-    drawNebula(time);
-    drawMovingStars(time, .72);
-    drawOrbitGauge(centerX, centerY, Math.min(width, height) * .23, time);
-    drawPlanetSystem(width * .16, height * .52, -1, time);
-    drawPlanetSystem(width * .84, height * .52, 1, time);
-    drawConstellationParticles(time);
-    drawHeavyMeteors(time);
+  function drawCyberpunk(time) {
+    clearWithGradient("#050611", "#160821");
+    drawCyberGrid(time);
+
+    const scanY = (time * 150) % (height + 160) - 80;
+    const scan = ctx.createLinearGradient(0, scanY - 80, 0, scanY + 80);
+    scan.addColorStop(0, "rgba(0,245,255,0)");
+    scan.addColorStop(.5, "rgba(0,245,255,.16)");
+    scan.addColorStop(1, "rgba(255,42,191,0)");
+    ctx.fillStyle = scan;
+    ctx.fillRect(0, scanY - 80, width, 160);
+
+    [0, 1].forEach(function (sideIndex) {
+      const side = sideIndex === 0 ? -1 : 1;
+      const baseX = sideIndex === 0 ? width * .07 : width * .93;
+      for (let tower = 0; tower < 9; tower += 1) {
+        const towerWidth = 14 + (tower % 3) * 10;
+        const towerHeight = height * (.22 + ((tower * 17) % 36) / 100);
+        const x = baseX + side * tower * 22;
+        const y = height - towerHeight + Math.sin(time * 1.4 + tower) * 10;
+        ctx.fillStyle = tower % 2 ? "rgba(255,42,191,.16)" : "rgba(0,245,255,.14)";
+        ctx.fillRect(x - towerWidth / 2, y, towerWidth, towerHeight);
+        ctx.strokeStyle = tower % 2 ? "rgba(255,42,191,.52)" : "rgba(0,245,255,.56)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x - towerWidth / 2, y, towerWidth, towerHeight);
+      }
+    });
+
+    particles.forEach(function (particle, index) {
+      particle.y -= .7 + particle.r * .012;
+      particle.x += Math.sin(time * 1.6 + particle.phase) * .26;
+      if (particle.y < -20) {
+        particle.y = height + 20;
+        particle.x = Math.random() * width;
+      }
+      ctx.beginPath();
+      ctx.arc(particle.x, particle.y, Math.max(1, particle.r * .035), 0, Math.PI * 2);
+      ctx.fillStyle = index % 2 ? "rgba(255,42,191,.44)" : "rgba(0,245,255,.46)";
+      ctx.fill();
+    });
   }
 
   function drawMagnetic(time) {
     clearWithGradient("#071015", "#151f1d");
-    const focusX = pointer.active ? pointer.x : centerX + Math.sin(time * .42) * width * .18;
-    const focusY = pointer.active ? pointer.y : centerY + Math.cos(time * .36) * height * .12;
+    const wells = [
+      { x: width * .08, y: centerY + Math.sin(time * .7) * height * .18, c: "rgba(93, 227, 202, .22)" },
+      { x: width * .92, y: centerY + Math.cos(time * .62) * height * .18, c: "rgba(226, 188, 105, .18)" }
+    ];
 
-    const glow = ctx.createRadialGradient(focusX, focusY, 0, focusX, focusY, 230);
-    glow.addColorStop(0, "rgba(93, 227, 202, .20)");
-    glow.addColorStop(.42, "rgba(226, 188, 105, .08)");
-    glow.addColorStop(1, "rgba(0,0,0,0)");
-    ctx.fillStyle = glow;
-    ctx.fillRect(0, 0, width, height);
+    if (pointer.active) {
+      wells.push({ x: pointer.x, y: pointer.y, c: "rgba(255, 231, 166, .14)" });
+    }
+
+    wells.forEach(function (well) {
+      const glow = ctx.createRadialGradient(well.x, well.y, 0, well.x, well.y, 250);
+      glow.addColorStop(0, well.c);
+      glow.addColorStop(.46, "rgba(93, 227, 202, .06)");
+      glow.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+    });
 
     const nodes = particles.map(function (particle) {
-      const dx = focusX - particle.x;
-      const dy = focusY - particle.y;
-      const distance = Math.hypot(dx, dy);
-      const influence = clamp(1 - distance / 240, 0, 1);
-      particle.x += particle.vx * .34 + dx * influence * .018;
-      particle.y += particle.vy * .34 + dy * influence * .018;
+      let pullX = 0;
+      let pullY = 0;
+      wells.forEach(function (well) {
+        const dx = well.x - particle.x;
+        const dy = well.y - particle.y;
+        const distance = Math.hypot(dx, dy);
+        const influence = clamp(1 - distance / 270, 0, 1);
+        pullX += dx * influence * .012;
+        pullY += dy * influence * .012;
+      });
+      particle.x += particle.vx * .34 + pullX;
+      particle.y += particle.vy * .34 + pullY;
       if (particle.x < -24) particle.x = width + 24;
       if (particle.x > width + 24) particle.x = -24;
       if (particle.y < -24) particle.y = height + 24;
@@ -882,7 +937,13 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-bento
 
     ctx.lineCap = "round";
     nodes.forEach(function (node, index) {
-      const distance = Math.hypot(focusX - node.x, focusY - node.y);
+      const nearest = wells.reduce(function (best, well) {
+        const distance = Math.hypot(well.x - node.x, well.y - node.y);
+        return distance < best.distance ? { well: well, distance: distance } : best;
+      }, { well: wells[0], distance: Infinity });
+      const focusX = nearest.well.x;
+      const focusY = nearest.well.y;
+      const distance = nearest.distance;
       if (distance < 260) {
         const alpha = .28 * (1 - distance / 260);
         ctx.strokeStyle = `rgba(113, 225, 200, ${alpha.toFixed(3)})`;
@@ -899,7 +960,33 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-bento
       ctx.fill();
     });
 
-    drawCircle(focusX, focusY, pointer.active ? 5.5 : 4.2, "rgba(255, 231, 166, .76)", "rgba(255,255,255,.45)");
+    wells.forEach(function (well, index) {
+      drawCircle(well.x, well.y, index < 2 ? 5.4 : 4.2, index === 1 ? "rgba(255, 231, 166, .70)" : "rgba(93, 227, 202, .70)", "rgba(255,255,255,.42)");
+    });
+  }
+
+  function drawCyberGrid(time) {
+    const horizon = height * .55;
+    ctx.lineWidth = 1;
+
+    for (let line = 0; line < 18; line += 1) {
+      const progress = (line + (time * 1.7 % 1)) / 18;
+      const y = horizon + Math.pow(progress, 1.85) * height * .58;
+      ctx.strokeStyle = line % 2 ? "rgba(255,42,191,.20)" : "rgba(0,245,255,.24)";
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
+    }
+
+    for (let line = -10; line <= 10; line += 1) {
+      const x = centerX + line * width * .055 + Math.sin(time * .8 + line) * 8;
+      ctx.strokeStyle = line % 2 ? "rgba(255,42,191,.24)" : "rgba(0,245,255,.28)";
+      ctx.beginPath();
+      ctx.moveTo(centerX, horizon);
+      ctx.lineTo(x, height + 80);
+      ctx.stroke();
+    }
   }
 
   function drawNebula(time) {

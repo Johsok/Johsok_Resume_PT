@@ -778,9 +778,12 @@ p { margin-bottom: 12px; }
   border: 1px solid #111;
 }
 .swiss h1 {
-  font-size: clamp(2.6rem, 6vw, 5.4rem);
-  line-height: .92;
+  font-size: clamp(2.05rem, 4.1vw, 3.1rem);
+  line-height: 1.08;
   text-transform: uppercase;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow: visible;
 }
 .swiss-main {
   display: grid;
