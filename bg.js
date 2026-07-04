@@ -17,6 +17,17 @@
   let stars = [];
   let particles = [];
   let meteors = [];
+  const planetModel = [
+    { name: "水星", orbit: .14, size: 3.2, color: ["#d8d8d8", "#777"], speed: 1.85 },
+    { name: "金星", orbit: .22, size: 4.8, color: ["#f5df82", "#b8862c"], speed: 1.45 },
+    { name: "地球", orbit: .31, size: 5.2, color: ["#66b7ff", "#1b5fae"], speed: 1.12 },
+    { name: "火星", orbit: .40, size: 4.1, color: ["#e98c6d", "#9d321c"], speed: .92 },
+    { name: "木星", orbit: .52, size: 9.2, color: ["#f2d1a2", "#9f6b3d"], speed: .58 },
+    { name: "土星", orbit: .64, size: 8.0, color: ["#f3dfab", "#a98348"], speed: .46, ring: true },
+    { name: "天王星", orbit: .75, size: 6.2, color: ["#bcf4f4", "#3aa6b8"], speed: .36 },
+    { name: "海王星", orbit: .86, size: 5.9, color: ["#8ca1ff", "#2f49b8"], speed: .30 },
+    { name: "冥王星", orbit: .96, size: 3.0, color: ["#d7b89c", "#7d5c43"], speed: .24 }
+  ];
 
   const backgrounds = [
     { id: "none", label: "00_無背景", className: "bg-none" },
@@ -29,7 +40,7 @@
     { id: "rain", label: "07_雨絲光幕", className: "bg-rain" },
     { id: "grid", label: "08_紙感幾何", className: "bg-grid" },
     { id: "mist", label: "09_晨曦雲霧", className: "bg-mist" },
-    { id: "dust", label: "10_粒子星塵", className: "bg-dust" }
+    { id: "dust", label: "10_粒子星座", className: "bg-dust" }
   ];
 
   const backgroundCss = `
@@ -324,7 +335,7 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root
 
   function getInitialBackground() {
     const bgParam = new URLSearchParams(window.location.search).get("bg");
-    const selectedBg = bgParam || backgrounds[0].id;
+    const selectedBg = bgParam || "dust";
     return backgrounds.some(function (bg) { return bg.id === selectedBg; }) ? selectedBg : backgrounds[0].id;
   }
 
@@ -371,7 +382,7 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root
   }
 
   function createScene(id) {
-    stars = makeStars(id === "galaxy" ? 420 : id === "stars" ? 520 : 180);
+    stars = makeStars(id === "galaxy" ? 420 : id === "stars" ? 520 : id === "dust" ? 680 : 180);
     particles = makeParticles(id);
     meteors = [];
   }
@@ -398,7 +409,7 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root
       rain: 130,
       grid: 36,
       mist: 34,
-      dust: 180
+      dust: 260
     };
     const count = counts[id] || 60;
 
@@ -632,17 +643,199 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root
   }
 
   function drawDust(time) {
-    clearWithGradient("#172030", "#263648");
-    particles.forEach(function (dust) {
-      dust.x += Math.sin(time + dust.phase) * .18 - .08;
-      dust.y -= .32 + dust.r * .002;
-      if (dust.y < -20) dust.y = height + 20;
-      if (dust.x < -20) dust.x = width + 20;
+    clearWithGradient("#030612", "#111b34");
+    drawNebula(time);
+    drawMovingStars(time, .85);
+    drawConstellationParticles(time);
+    drawPlanetSystem(width * .13, height * .52, -1, time);
+    drawPlanetSystem(width * .87, height * .52, 1, time);
+    drawHeavyMeteors(time);
+  }
+
+  function drawConstellationParticles(time) {
+    const nodes = particles.map(function (particle) {
+      return {
+        x: particle.x + Math.sin(time * .45 + particle.phase) * 18,
+        y: particle.y + Math.cos(time * .38 + particle.phase) * 14,
+        r: Math.max(.8, particle.r * .035),
+        a: particle.a
+      };
+    });
+
+    ctx.lineWidth = .65;
+    for (let index = 0; index < nodes.length; index += 1) {
+      const node = nodes[index];
+      for (let next = index + 1; next < Math.min(nodes.length, index + 10); next += 1) {
+        const other = nodes[next];
+        const distance = Math.hypot(node.x - other.x, node.y - other.y);
+        if (distance < 105) {
+          ctx.strokeStyle = `rgba(143, 188, 255, ${(.20 * (1 - distance / 105)).toFixed(3)})`;
+          ctx.beginPath();
+          ctx.moveTo(node.x, node.y);
+          ctx.lineTo(other.x, other.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    nodes.forEach(function (node) {
       ctx.beginPath();
-      ctx.arc(dust.x, dust.y, Math.max(.7, dust.r * .045), 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255,226,168,${dust.a})`;
+      ctx.arc(node.x, node.y, node.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 234, 180, ${clamp(node.a + .18, .18, .78)})`;
       ctx.fill();
     });
+  }
+
+  function drawPlanetSystem(originX, originY, side, time) {
+    const maxOrbit = Math.min(width * .155, height * .34, 180);
+    const sunRadius = Math.max(10, maxOrbit * .08);
+
+    ctx.save();
+    ctx.translate(originX, originY);
+
+    for (let index = planetModel.length - 1; index >= 0; index -= 1) {
+      const planet = planetModel[index];
+      const orbit = maxOrbit * planet.orbit;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, orbit, orbit * .74, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(255,255,255,.105)";
+      ctx.lineWidth = .65;
+      ctx.stroke();
+    }
+
+    drawSunDisc(0, 0, sunRadius);
+
+    planetModel.forEach(function (planet, index) {
+      const orbit = maxOrbit * planet.orbit;
+      const angle = time * planet.speed * side + index * .74 + side * .38;
+      const x = Math.cos(angle) * orbit;
+      const y = Math.sin(angle) * orbit * .74;
+      const radius = Math.max(2.2, planet.size * maxOrbit / 170);
+
+      if (planet.ring) {
+        drawPlanetRing(x, y, radius, time * planet.speed);
+      }
+
+      drawPlanetDisc(x, y, radius, planet.color, time * (1.5 + planet.speed));
+    });
+
+    ctx.restore();
+  }
+
+  function drawSunDisc(x, y, radius) {
+    const glow = ctx.createRadialGradient(x, y, radius * .7, x, y, radius * 3.8);
+    glow.addColorStop(0, "rgba(255, 203, 88, .34)");
+    glow.addColorStop(1, "rgba(255, 85, 30, 0)");
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(x, y, radius * 3.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    const core = ctx.createRadialGradient(x - radius * .3, y - radius * .3, 0, x, y, radius);
+    core.addColorStop(0, "#fffbd5");
+    core.addColorStop(.45, "#ffd454");
+    core.addColorStop(1, "#f46b26");
+    ctx.fillStyle = core;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function drawPlanetDisc(x, y, radius, colors, rotation) {
+    const gradient = ctx.createRadialGradient(x - radius * .35, y - radius * .35, 0, x, y, radius * 1.25);
+    gradient.addColorStop(0, colors[0]);
+    gradient.addColorStop(.58, colors[1]);
+    gradient.addColorStop(1, "rgba(0,0,0,.70)");
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rotation);
+    ctx.strokeStyle = "rgba(255,255,255,.22)";
+    ctx.lineWidth = Math.max(.5, radius * .12);
+    for (let stripe = -1; stripe <= 1; stripe += 1) {
+      ctx.beginPath();
+      ctx.ellipse(0, stripe * radius * .32, radius * .82, radius * .18, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    ctx.beginPath();
+    ctx.arc(x, y, radius * 1.45, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255,255,255,.035)";
+    ctx.fill();
+  }
+
+  function drawPlanetRing(x, y, radius, rotation) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rotation * .3);
+    ctx.scale(1, .34);
+    ctx.strokeStyle = "rgba(230, 206, 145, .55)";
+    ctx.lineWidth = Math.max(1, radius * .28);
+    ctx.beginPath();
+    ctx.ellipse(0, 0, radius * 2.2, radius * 1.05, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawHeavyMeteors(time) {
+    if (Math.random() < .22) spawnSideMeteor();
+    if (Math.random() < .12) spawnSideMeteor();
+    if (Math.random() < .07) spawnSideMeteor();
+
+    for (let index = meteors.length - 1; index >= 0; index -= 1) {
+      const meteor = meteors[index];
+      meteor.x += meteor.vx;
+      meteor.y += meteor.vy;
+      meteor.life -= meteor.decay;
+
+      if (meteor.life <= 0 || meteor.x > width + 180 || meteor.y > height + 180) {
+        meteors.splice(index, 1);
+        continue;
+      }
+
+      const tailX = meteor.x - meteor.vx * meteor.len / 10;
+      const tailY = meteor.y - meteor.vy * meteor.len / 10;
+      const gradient = ctx.createLinearGradient(meteor.x, meteor.y, tailX, tailY);
+      gradient.addColorStop(0, `rgba(255,255,255,${meteor.life})`);
+      gradient.addColorStop(.32, `rgba(163,205,255,${meteor.life * .58})`);
+      gradient.addColorStop(1, "rgba(93,150,255,0)");
+
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = meteor.width * meteor.life;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(meteor.x, meteor.y);
+      ctx.lineTo(tailX, tailY);
+      ctx.stroke();
+    }
+  }
+
+  function spawnSideMeteor() {
+    const fromLeft = Math.random() < .52;
+    const startX = fromLeft ? Math.random() * width * .42 - 80 : width * .58 + Math.random() * width * .42;
+    const startY = -40 - Math.random() * height * .22;
+    const speed = 7.5 + Math.random() * 8.5;
+    const angle = Math.PI / 4 + (Math.random() - .5) * .32;
+
+    meteors.push({
+      x: startX,
+      y: startY,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      len: 74 + Math.random() * 118,
+      life: .82 + Math.random() * .18,
+      decay: .009 + Math.random() * .009,
+      width: .9 + Math.random() * 1.8
+    });
+
+    if (meteors.length > 70) {
+      meteors.splice(0, meteors.length - 70);
+    }
   }
 
   function drawSoftParticles(time, colors) {
