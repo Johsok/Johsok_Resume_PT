@@ -57,10 +57,51 @@
   opacity: 0;
 }
 body[data-dynamic-background]:not([data-dynamic-background="none"]) {
+  --theme-bg: transparent;
+  --theme-ink: #172326;
+  --theme-muted: #5a6663;
+  --theme-line: #d8e1de;
+  --theme-soft: #f3f7f5;
+  --theme-paper: #ffffff;
+  --theme-card: #ffffff;
+  --theme-shadow: 0 16px 42px rgba(20, 36, 32, .11);
+  --theme-texture: none;
+  --resume-fixed-bg: linear-gradient(180deg, rgba(255,255,255,.97), rgba(248,251,250,.98));
+  --resume-fixed-width: min(1188px, calc(100% - 24px));
   background: transparent !important;
 }
 body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root {
+  position: relative;
+  isolation: isolate;
   background: transparent !important;
+  color: var(--theme-ink) !important;
+}
+body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  z-index: -1;
+  width: var(--resume-fixed-width);
+  min-height: 100%;
+  transform: translateX(-50%);
+  background: var(--resume-fixed-bg);
+  border-left: 1px solid rgba(216, 225, 222, .82);
+  border-right: 1px solid rgba(216, 225, 222, .82);
+  box-shadow: 0 0 42px rgba(0, 0, 0, .12);
+  pointer-events: none;
+}
+body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-page {
+  position: relative;
+  z-index: 1;
+  background: var(--resume-fixed-bg);
+}
+body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-dashboard::before,
+body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-split::before,
+body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-matrix::before,
+body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-bento::before {
+  display: none;
 }
 .dynamic-bg::before,
 .dynamic-bg::after {
@@ -300,6 +341,19 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root
   .dynamic-bg::before,
   .dynamic-bg::after {
     animation: none !important;
+  }
+}
+@media (max-width: 760px) {
+  body[data-dynamic-background]:not([data-dynamic-background="none"]) {
+    --resume-fixed-width: 100%;
+  }
+  body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root::before {
+    border-left: 0;
+    border-right: 0;
+    box-shadow: none;
+  }
+  body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-page {
+    width: min(100% - 16px, 720px);
   }
 }
 `;
