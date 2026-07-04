@@ -28,6 +28,12 @@
 .dynamic-bg.bg-none {
   opacity: 0;
 }
+body[data-dynamic-background]:not([data-dynamic-background="none"]) {
+  background: transparent !important;
+}
+body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root {
+  background: transparent !important;
+}
 .dynamic-bg::before,
 .dynamic-bg::after {
   content: "";
@@ -210,8 +216,7 @@
 
   function getInitialBackground() {
     const bgParam = new URLSearchParams(window.location.search).get("bg");
-    const storedBg = localStorage.getItem(bgKey);
-    const selectedBg = bgParam || storedBg || backgrounds[0].id;
+    const selectedBg = bgParam || backgrounds[0].id;
     return backgrounds.some(function (bg) { return bg.id === selectedBg; }) ? selectedBg : backgrounds[0].id;
   }
 
@@ -219,6 +224,7 @@
     const bg = backgrounds.find(function (item) { return item.id === id; }) || backgrounds[0];
     bgRoot.className = `dynamic-bg ${bg.className}`;
     document.body.dataset.dynamicBackground = bg.id;
+    document.documentElement.dataset.dynamicBackground = bg.id;
   }
 
   function escapeHtml(value) {
