@@ -721,6 +721,442 @@ p { margin-bottom: 12px; }
   background: #fff;
   font-weight: 800;
 }
+.theme-dashboard .panel,
+.theme-dashboard .metric,
+.theme-dashboard .job {
+  border-color: rgba(20, 132, 112, .22);
+}
+.theme-dashboard .identity {
+  background:
+    linear-gradient(180deg, rgba(15,139,117,.10), transparent 42%),
+    var(--theme-paper);
+}
+.theme-dashboard .metric strong {
+  font-size: 1.55rem;
+}
+.theme-dashboard .dash-main > .panel:first-of-type {
+  border-left: 6px solid var(--theme-accent);
+}
+.theme-editorial .editorial {
+  align-items: end;
+  border-top: 2px solid var(--theme-accent);
+  padding-top: 28px;
+}
+.theme-editorial h1 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.8rem, 7vw, 6.4rem);
+  font-weight: 500;
+}
+.theme-editorial .editorial-copy {
+  border-left: 8px solid var(--theme-accent);
+}
+.theme-editorial .panel {
+  border-top: 4px solid var(--theme-accent-2);
+}
+.swiss {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+  border-top: 10px solid var(--theme-accent);
+  padding-top: 28px;
+}
+.swiss-rail,
+.swiss-block {
+  background: var(--theme-paper);
+  border-top: 2px solid #111;
+  padding: 20px 0 0;
+}
+.swiss-rail {
+  position: sticky;
+  top: 50px;
+}
+.swiss-rail .theme-photo {
+  margin-bottom: 18px;
+  border-radius: 0;
+  padding: 0;
+  border: 1px solid #111;
+}
+.swiss h1 {
+  font-size: clamp(2.6rem, 6vw, 5.4rem);
+  line-height: .92;
+  text-transform: uppercase;
+}
+.swiss-main {
+  display: grid;
+  gap: 22px;
+}
+.swiss-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.swiss-metrics .metric,
+.swiss .job {
+  border: 0;
+  border-top: 2px solid #111;
+  background: transparent;
+  padding-left: 0;
+}
+.luxury-shell {
+  display: grid;
+  gap: 20px;
+  padding: 18px;
+  color: var(--theme-ink);
+  background: var(--theme-bg);
+  border: 1px solid var(--theme-line);
+}
+.luxury-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 28px;
+  align-items: center;
+  padding: 30px;
+  background: var(--theme-paper);
+  border: 1px solid var(--theme-line);
+}
+.luxury-hero h1 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.6rem, 6vw, 5.6rem);
+  font-weight: 400;
+}
+.luxury-hero .role {
+  color: var(--theme-accent);
+}
+.luxury-photo .theme-photo {
+  border-radius: 0;
+  border: 1px solid var(--theme-accent);
+  background: #111;
+}
+.luxury-grid {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 20px;
+}
+.luxury-card {
+  padding: 24px;
+  background: var(--theme-paper);
+  border: 1px solid var(--theme-line);
+}
+.luxury-card .section-title {
+  color: var(--theme-accent);
+  border-bottom: 1px solid var(--theme-line);
+  padding-bottom: 10px;
+}
+.luxury-card .profile-line {
+  grid-template-columns: repeat(2, 1fr);
+}
+.glass-wrap {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(123, 92, 255, .42), transparent 28%),
+    radial-gradient(circle at 88% 18%, rgba(37, 211, 255, .35), transparent 26%),
+    linear-gradient(135deg, #10192d, #20385f 54%, #18223d);
+  border-radius: 8px;
+}
+.glass-hero,
+.glass-card {
+  background: rgba(255, 255, 255, .14);
+  border: 1px solid rgba(255, 255, 255, .34);
+  border-radius: 8px;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, .22);
+  backdrop-filter: blur(18px);
+}
+.glass-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 20px;
+  align-items: center;
+  padding: 28px;
+  color: #fff;
+}
+.glass-hero .muted,
+.glass-hero .role {
+  color: rgba(255, 255, 255, .78);
+}
+.glass-hero h1 {
+  font-size: clamp(2.5rem, 6vw, 5.2rem);
+}
+.glass-photo .theme-photo {
+  background: rgba(255, 255, 255, .18);
+  border: 1px solid rgba(255, 255, 255, .28);
+}
+.glass-grid {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 18px;
+}
+.glass-card {
+  padding: 22px;
+  color: #fff;
+}
+.glass-card .job,
+.glass-card .bar,
+.glass-card .chip,
+.glass-hero .metric {
+  background: rgba(255, 255, 255, .12);
+  border-color: rgba(255, 255, 255, .28);
+}
+.glass-hero .profile-line {
+  grid-template-columns: repeat(2, 1fr);
+}
+.glass-card .muted,
+.glass-card .job small,
+.glass-card .contact-list span {
+  color: rgba(255, 255, 255, .74);
+}
+.neu-shell {
+  display: grid;
+  gap: 20px;
+  padding: 22px;
+  background: var(--theme-bg);
+}
+.neu-hero,
+.neu-card {
+  background: var(--theme-paper);
+  border: 1px solid rgba(255, 255, 255, .72);
+  border-radius: 8px;
+  box-shadow: 12px 12px 28px rgba(142, 154, 172, .38), -12px -12px 28px rgba(255, 255, 255, .86);
+}
+.neu-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 22px;
+  align-items: center;
+  padding: 28px;
+}
+.neu-photo .theme-photo {
+  border-radius: 8px;
+  box-shadow: inset 7px 7px 16px rgba(142, 154, 172, .34), inset -7px -7px 16px rgba(255, 255, 255, .86);
+}
+.neu-grid {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 20px;
+}
+.neu-card {
+  padding: 22px;
+}
+.neu-card .job,
+.neu-card .bar,
+.neu-card .chip,
+.neu-hero .metric {
+  border: 0;
+  box-shadow: inset 4px 4px 10px rgba(142, 154, 172, .24), inset -4px -4px 10px rgba(255, 255, 255, .78);
+}
+.cyber-shell {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+  color: #e8fbff;
+  background:
+    linear-gradient(90deg, rgba(0,245,255,.08) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(0deg, rgba(255,42,191,.08) 1px, transparent 1px) 0 0 / 28px 28px,
+    #070912;
+}
+.cyber-hero,
+.cyber-card {
+  background: rgba(11, 15, 32, .94);
+  border: 1px solid rgba(0, 245, 255, .58);
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px rgba(255, 42, 191, .22), 0 0 28px rgba(0, 245, 255, .18);
+}
+.cyber-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 20px;
+  align-items: center;
+  padding: 28px;
+}
+.cyber-hero h1 {
+  color: #fff;
+  text-shadow: 2px 0 #ff2abf, -2px 0 #00f5ff;
+}
+.cyber-hero .role,
+.cyber-card .section-title {
+  color: var(--theme-accent);
+}
+.cyber-photo .theme-photo {
+  border: 1px solid rgba(255, 42, 191, .7);
+  background: #0b1024;
+}
+.cyber-grid {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 18px;
+}
+.cyber-card {
+  padding: 22px;
+}
+.cyber-card .job,
+.cyber-card .bar,
+.cyber-card .chip,
+.cyber-hero .metric {
+  background: rgba(0, 245, 255, .07);
+  border-color: rgba(0, 245, 255, .40);
+}
+.terminal-shell {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  color: #7CFF77;
+  background: #050805;
+  border: 1px solid #1b5c1b;
+  font-family: "Consolas", "Cascadia Mono", monospace;
+}
+.terminal-head,
+.terminal-card {
+  background: #071207;
+  border: 1px solid #2acb36;
+  border-radius: 0;
+  box-shadow: 0 0 18px rgba(42, 203, 54, .14);
+}
+.terminal-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 18px;
+  align-items: center;
+  padding: 24px;
+}
+.terminal-head h1::before {
+  content: "> ";
+}
+.terminal-head .muted,
+.terminal-head .role,
+.terminal-card .muted,
+.terminal-card .job small,
+.terminal-card .contact-list span {
+  color: #a9ffa6;
+}
+.terminal-photo .theme-photo {
+  border-radius: 0;
+  border: 1px solid #2acb36;
+  background: #000;
+}
+.terminal-grid {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 16px;
+}
+.terminal-card {
+  padding: 20px;
+}
+.terminal-card .section-title::before {
+  content: "$ ";
+}
+.terminal-card .job,
+.terminal-card .bar,
+.terminal-card .chip,
+.terminal-head .metric {
+  background: #020602;
+  border-color: #2acb36;
+}
+.y2k-shell {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(255,135,218,.40), transparent 24%),
+    radial-gradient(circle at 82% 8%, rgba(143,192,255,.42), transparent 22%),
+    linear-gradient(135deg, #fff2fb, #eaf1ff 52%, #f7ecff);
+}
+.y2k-hero,
+.y2k-card {
+  background: rgba(255, 255, 255, .72);
+  border: 2px solid rgba(151, 126, 255, .38);
+  border-radius: 8px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.92), 0 18px 34px rgba(148, 128, 255, .22);
+}
+.y2k-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 20px;
+  align-items: center;
+  padding: 28px;
+}
+.y2k-hero h1 {
+  color: #6952d7;
+  text-shadow: 0 2px #fff, 0 5px rgba(255, 112, 210, .34);
+}
+.y2k-photo .theme-photo {
+  border: 2px solid rgba(151, 126, 255, .40);
+  background: linear-gradient(135deg, #fff, #f0e9ff);
+}
+.y2k-grid {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 18px;
+}
+.y2k-card {
+  padding: 22px;
+}
+.y2k-card .job,
+.y2k-card .bar,
+.y2k-card .chip,
+.y2k-hero .metric {
+  background: rgba(255, 255, 255, .66);
+  border-color: rgba(151, 126, 255, .38);
+}
+.memphis-shell {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+  background:
+    radial-gradient(circle, #111 0 3px, transparent 4px) 0 0 / 30px 30px,
+    linear-gradient(135deg, #fff, #fff6cf);
+}
+.memphis-hero,
+.memphis-card {
+  background: #fff;
+  border: 3px solid #111;
+  border-radius: 0;
+  box-shadow: 8px 8px 0 #111;
+}
+.memphis-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 20px;
+  align-items: center;
+  padding: 28px;
+  background:
+    linear-gradient(90deg, #39d6d6 0 28%, #fff 28% 100%);
+}
+.memphis-hero h1 {
+  color: #111;
+  text-transform: uppercase;
+}
+.memphis-photo .theme-photo {
+  border: 3px solid #111;
+  border-radius: 0;
+  background: #ff6fb7;
+}
+.memphis-grid {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 18px;
+}
+.memphis-card {
+  padding: 22px;
+}
+.memphis-card:nth-child(2),
+.memphis-card.pop {
+  background: #ffdd3d;
+}
+.memphis-card .section-title {
+  color: #111;
+  border-bottom: 3px solid #111;
+  padding-bottom: 8px;
+}
+.memphis-card .job,
+.memphis-card .bar,
+.memphis-card .chip,
+.memphis-hero .metric {
+  border: 2px solid #111;
+  border-radius: 0;
+  background: #fff;
+}
 @media (max-width: 900px) {
   .resume-page { width: min(100% - 24px, 720px); padding-top: 50px; }
   .dash,
@@ -733,11 +1169,27 @@ p { margin-bottom: 12px; }
   .classic,
   .portfolio-head,
   .brutal-hero,
-  .brutal-main {
+  .brutal-main,
+  .swiss,
+  .luxury-hero,
+  .luxury-grid,
+  .glass-hero,
+  .glass-grid,
+  .neu-hero,
+  .neu-grid,
+  .cyber-hero,
+  .cyber-grid,
+  .terminal-head,
+  .terminal-grid,
+  .y2k-hero,
+  .y2k-grid,
+  .memphis-hero,
+  .memphis-grid {
     grid-template-columns: 1fr;
   }
   .identity,
-  .intro {
+  .intro,
+  .swiss-rail {
     position: static;
   }
   .metric-grid,
@@ -747,6 +1199,7 @@ p { margin-bottom: 12px; }
   .facts,
   .metric-band,
   .brutal-strip,
+  .swiss-metrics,
   .portfolio-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -781,6 +1234,7 @@ p { margin-bottom: 12px; }
   .facts,
   .metric-band,
   .brutal-strip,
+  .swiss-metrics,
   .portfolio-grid {
     grid-template-columns: 1fr;
   }
@@ -788,6 +1242,10 @@ p { margin-bottom: 12px; }
   .split h1,
   .editorial h1,
   .brutal-nameplate h1,
+  .cyber-hero h1,
+  .terminal-head h1,
+  .y2k-hero h1,
+  .memphis-hero h1,
   .portfolio h1 {
     font-size: 2.35rem;
   }
@@ -854,6 +1312,18 @@ p { margin-bottom: 12px; }
   --theme-shadow: 0 18px 45px rgba(23, 35, 38, .10);
   --theme-texture: linear-gradient(90deg, rgba(15, 139, 117, .08) 1px, transparent 1px) 0 0 / 34px 34px,
                    linear-gradient(0deg, rgba(45, 114, 184, .07) 1px, transparent 1px) 0 0 / 34px 34px;
+}
+.theme-dashboard {
+  --theme-ink: #172326;
+  --theme-muted: #5d6a70;
+  --theme-line: #d5e2df;
+  --theme-soft: #eef6f3;
+  --theme-paper: rgba(255, 255, 255, .96);
+  --theme-card: #fff;
+  --theme-accent: #0f8b75;
+  --theme-accent-2: #d89b27;
+  --theme-accent-3: #2d72b8;
+  --theme-shadow: 0 18px 45px rgba(23, 35, 38, .10);
 }
 `,
       render: renderDashboard
@@ -949,6 +1419,18 @@ p { margin-bottom: 12px; }
   --theme-island-bg: rgba(255, 255, 255, .97);
   --theme-island-line: #dfdbd3;
   --theme-island-shadow: 0 18px 45px rgba(20, 20, 20, .10);
+}
+.theme-editorial {
+  --theme-ink: #161616;
+  --theme-muted: #64605a;
+  --theme-line: #dfdbd3;
+  --theme-soft: #f4f0e8;
+  --theme-paper: rgba(255, 255, 255, .97);
+  --theme-card: #fff;
+  --theme-accent: #a9483e;
+  --theme-accent-2: #b88b2e;
+  --theme-accent-3: #304f65;
+  --theme-shadow: 0 18px 45px rgba(20, 20, 20, .10);
 }
 `,
       render: renderEditorial
@@ -1080,6 +1562,278 @@ p { margin-bottom: 12px; }
 }
 `,
       render: renderClinical
+    },
+    {
+      id: "swiss",
+      label: "11_瑞士平面",
+      className: "theme-swiss",
+      css: `
+:root {
+  --theme-bg: #f7f7f3;
+  --theme-ink: #111;
+  --theme-muted: #545454;
+  --theme-line: #111;
+  --theme-soft: #f0f0eb;
+  --theme-paper: #fff;
+  --theme-card: #fff;
+  --theme-accent: #e3342f;
+  --theme-accent-2: #111;
+  --theme-accent-3: #777;
+  --theme-shadow: none;
+  --theme-texture: none;
+}
+.theme-swiss {
+  --theme-ink: #111;
+  --theme-muted: #545454;
+  --theme-line: #111;
+  --theme-soft: #f0f0eb;
+  --theme-paper: #fff;
+  --theme-card: #fff;
+  --theme-accent: #e3342f;
+  --theme-accent-2: #111;
+  --theme-accent-3: #777;
+  --theme-shadow: none;
+}
+`,
+      render: renderSwiss
+    },
+    {
+      id: "luxury",
+      label: "12_極簡高級",
+      className: "theme-luxury",
+      css: `
+:root {
+  --theme-bg: #0e0e0c;
+  --theme-ink: #f6f0e6;
+  --theme-muted: #b8afa1;
+  --theme-line: rgba(214, 184, 108, .42);
+  --theme-soft: #191712;
+  --theme-paper: #12110f;
+  --theme-card: #16140f;
+  --theme-accent: #d6b86c;
+  --theme-accent-2: #f2dfaa;
+  --theme-accent-3: #6f6040;
+  --theme-shadow: 0 22px 60px rgba(0, 0, 0, .32);
+  --theme-texture: none;
+}
+.theme-luxury {
+  --theme-ink: #f6f0e6;
+  --theme-muted: #b8afa1;
+  --theme-line: rgba(214, 184, 108, .42);
+  --theme-soft: #191712;
+  --theme-paper: #12110f;
+  --theme-card: #16140f;
+  --theme-accent: #d6b86c;
+  --theme-accent-2: #f2dfaa;
+  --theme-accent-3: #6f6040;
+  --theme-shadow: 0 22px 60px rgba(0, 0, 0, .32);
+}
+`,
+      render: renderLuxury
+    },
+    {
+      id: "glass",
+      label: "13_玻璃擬態",
+      className: "theme-glass",
+      css: `
+:root {
+  --theme-bg: #14213d;
+  --theme-ink: #fff;
+  --theme-muted: rgba(255, 255, 255, .72);
+  --theme-line: rgba(255, 255, 255, .30);
+  --theme-soft: rgba(255, 255, 255, .12);
+  --theme-paper: rgba(255, 255, 255, .14);
+  --theme-card: rgba(255, 255, 255, .16);
+  --theme-accent: #9bdcff;
+  --theme-accent-2: #ffd166;
+  --theme-accent-3: #c7a8ff;
+  --theme-shadow: 0 22px 50px rgba(0, 0, 0, .22);
+  --theme-texture: none;
+}
+.theme-glass {
+  --theme-ink: #fff;
+  --theme-muted: rgba(255, 255, 255, .72);
+  --theme-line: rgba(255, 255, 255, .30);
+  --theme-soft: rgba(255, 255, 255, .12);
+  --theme-paper: rgba(255, 255, 255, .14);
+  --theme-card: rgba(255, 255, 255, .16);
+  --theme-accent: #9bdcff;
+  --theme-accent-2: #ffd166;
+  --theme-accent-3: #c7a8ff;
+  --theme-shadow: 0 22px 50px rgba(0, 0, 0, .22);
+}
+`,
+      render: renderGlass
+    },
+    {
+      id: "neumorphism",
+      label: "14_新擬態",
+      className: "theme-neumorphism",
+      css: `
+:root {
+  --theme-bg: #e9eef4;
+  --theme-ink: #243044;
+  --theme-muted: #6c788a;
+  --theme-line: rgba(255, 255, 255, .70);
+  --theme-soft: #e3e9f1;
+  --theme-paper: #e9eef4;
+  --theme-card: #edf2f8;
+  --theme-accent: #6f7df6;
+  --theme-accent-2: #8e75d6;
+  --theme-accent-3: #4c75a8;
+  --theme-shadow: 12px 12px 28px rgba(142, 154, 172, .38), -12px -12px 28px rgba(255, 255, 255, .86);
+  --theme-texture: none;
+}
+.theme-neumorphism {
+  --theme-ink: #243044;
+  --theme-muted: #6c788a;
+  --theme-line: rgba(255, 255, 255, .70);
+  --theme-soft: #e3e9f1;
+  --theme-paper: #e9eef4;
+  --theme-card: #edf2f8;
+  --theme-accent: #6f7df6;
+  --theme-accent-2: #8e75d6;
+  --theme-accent-3: #4c75a8;
+  --theme-shadow: 12px 12px 28px rgba(142, 154, 172, .38), -12px -12px 28px rgba(255, 255, 255, .86);
+}
+`,
+      render: renderNeumorphism
+    },
+    {
+      id: "cyberpunk",
+      label: "15_賽博龐克",
+      className: "theme-cyberpunk",
+      css: `
+:root {
+  --theme-bg: #070912;
+  --theme-ink: #e8fbff;
+  --theme-muted: #9edfea;
+  --theme-line: rgba(0, 245, 255, .58);
+  --theme-soft: rgba(0, 245, 255, .08);
+  --theme-paper: rgba(11, 15, 32, .94);
+  --theme-card: rgba(11, 15, 32, .94);
+  --theme-accent: #00f5ff;
+  --theme-accent-2: #ff2abf;
+  --theme-accent-3: #ffe66d;
+  --theme-shadow: 0 0 28px rgba(0, 245, 255, .18);
+  --theme-texture: none;
+}
+.theme-cyberpunk {
+  --theme-ink: #e8fbff;
+  --theme-muted: #9edfea;
+  --theme-line: rgba(0, 245, 255, .58);
+  --theme-soft: rgba(0, 245, 255, .08);
+  --theme-paper: rgba(11, 15, 32, .94);
+  --theme-card: rgba(11, 15, 32, .94);
+  --theme-accent: #00f5ff;
+  --theme-accent-2: #ff2abf;
+  --theme-accent-3: #ffe66d;
+  --theme-shadow: 0 0 28px rgba(0, 245, 255, .18);
+}
+`,
+      render: renderCyberpunk
+    },
+    {
+      id: "terminal",
+      label: "16_復古終端",
+      className: "theme-terminal",
+      css: `
+:root {
+  --theme-bg: #050805;
+  --theme-ink: #7CFF77;
+  --theme-muted: #a9ffa6;
+  --theme-line: #2acb36;
+  --theme-soft: #020602;
+  --theme-paper: #071207;
+  --theme-card: #071207;
+  --theme-accent: #7CFF77;
+  --theme-accent-2: #d6ff74;
+  --theme-accent-3: #2acb36;
+  --theme-shadow: 0 0 18px rgba(42, 203, 54, .14);
+  --theme-texture: none;
+}
+.theme-terminal {
+  --theme-ink: #7CFF77;
+  --theme-muted: #a9ffa6;
+  --theme-line: #2acb36;
+  --theme-soft: #020602;
+  --theme-paper: #071207;
+  --theme-card: #071207;
+  --theme-accent: #7CFF77;
+  --theme-accent-2: #d6ff74;
+  --theme-accent-3: #2acb36;
+  --theme-shadow: 0 0 18px rgba(42, 203, 54, .14);
+}
+`,
+      render: renderTerminal
+    },
+    {
+      id: "y2k",
+      label: "17_Y2K",
+      className: "theme-y2k",
+      css: `
+:root {
+  --theme-bg: #fff2fb;
+  --theme-ink: #33266b;
+  --theme-muted: #6e61a7;
+  --theme-line: rgba(151, 126, 255, .38);
+  --theme-soft: rgba(255, 255, 255, .66);
+  --theme-paper: rgba(255, 255, 255, .72);
+  --theme-card: rgba(255, 255, 255, .76);
+  --theme-accent: #6952d7;
+  --theme-accent-2: #ff70d2;
+  --theme-accent-3: #65a7ff;
+  --theme-shadow: 0 18px 34px rgba(148, 128, 255, .22);
+  --theme-texture: none;
+}
+.theme-y2k {
+  --theme-ink: #33266b;
+  --theme-muted: #6e61a7;
+  --theme-line: rgba(151, 126, 255, .38);
+  --theme-soft: rgba(255, 255, 255, .66);
+  --theme-paper: rgba(255, 255, 255, .72);
+  --theme-card: rgba(255, 255, 255, .76);
+  --theme-accent: #6952d7;
+  --theme-accent-2: #ff70d2;
+  --theme-accent-3: #65a7ff;
+  --theme-shadow: 0 18px 34px rgba(148, 128, 255, .22);
+}
+`,
+      render: renderY2k
+    },
+    {
+      id: "memphis",
+      label: "18_孟菲斯",
+      className: "theme-memphis",
+      css: `
+:root {
+  --theme-bg: #fff6cf;
+  --theme-ink: #111;
+  --theme-muted: #373737;
+  --theme-line: #111;
+  --theme-soft: #ffdd3d;
+  --theme-paper: #fff;
+  --theme-card: #fff;
+  --theme-accent: #39d6d6;
+  --theme-accent-2: #ff6fb7;
+  --theme-accent-3: #7d5cff;
+  --theme-shadow: 8px 8px 0 #111;
+  --theme-texture: none;
+}
+.theme-memphis {
+  --theme-ink: #111;
+  --theme-muted: #373737;
+  --theme-line: #111;
+  --theme-soft: #ffdd3d;
+  --theme-paper: #fff;
+  --theme-card: #fff;
+  --theme-accent: #39d6d6;
+  --theme-accent-2: #ff6fb7;
+  --theme-accent-3: #7d5cff;
+  --theme-shadow: 8px 8px 0 #111;
+}
+`,
+      render: renderMemphis
     }
   ];
 
@@ -1505,6 +2259,302 @@ self.onmessage = async function (event) {
             ${sectionTitle(data, "contact")}
             ${contactList(data)}
           </div>
+        </section>
+      </div>
+    `;
+  }
+
+  function renderSwiss(data) {
+    return `
+      <div class="resume-page">
+        <section class="swiss">
+          <aside class="swiss-rail">
+            ${photo(data)}
+            ${identity(data)}
+            ${contactList(data)}
+          </aside>
+          <main class="swiss-main">
+            <section class="swiss-block">
+              ${sectionTitle(data, "summary")}
+              ${summary(data)}
+            </section>
+            <section class="swiss-metrics">
+              ${metrics(data).map(metricCard).join("")}
+            </section>
+            <section class="two">
+              <div class="swiss-block">
+                ${sectionTitle(data, "skills")}
+                ${skillMeters(data)}
+              </div>
+              <div class="swiss-block">
+                ${sectionTitle(data, "tools")}
+                ${chips(data.toolsFull)}
+              </div>
+            </section>
+            <section class="swiss-block">
+              ${sectionTitle(data, "jobs")}
+              ${jobGrid(data.jobs)}
+            </section>
+          </main>
+        </section>
+      </div>
+    `;
+  }
+
+  function renderLuxury(data) {
+    return `
+      <div class="resume-page">
+        <section class="luxury-shell">
+          <section class="luxury-hero">
+            <div>
+              ${identity(data)}
+              ${summary(data)}
+            </div>
+            <div class="luxury-photo">
+              ${photo(data)}
+            </div>
+          </section>
+          <section class="luxury-grid">
+            <div class="luxury-card">
+              ${sectionTitle(data, "jobs")}
+              ${jobGrid(data.jobs)}
+            </div>
+            <aside class="luxury-card">
+              ${sectionTitle(data, "contact")}
+              ${contactList(data)}
+              <div style="margin-top:18px;">${metricLine(data)}</div>
+            </aside>
+            <div class="luxury-card">
+              ${sectionTitle(data, "skills")}
+              ${skillMeters(data)}
+            </div>
+            <div class="luxury-card">
+              ${sectionTitle(data, "toolsShort")}
+              ${chips(data.toolsShort)}
+            </div>
+          </section>
+        </section>
+      </div>
+    `;
+  }
+
+  function renderGlass(data) {
+    return `
+      <div class="resume-page">
+        <section class="glass-wrap">
+          <section class="glass-hero">
+            <div>
+              ${identity(data)}
+              ${summary(data)}
+              <div style="margin-top:18px;">${metricLine(data)}</div>
+            </div>
+            <div class="glass-photo">
+              ${photo(data)}
+            </div>
+          </section>
+          <section class="glass-grid">
+            <div class="glass-card">
+              ${sectionTitle(data, "jobs")}
+              ${jobGrid(data.jobs)}
+            </div>
+            <aside class="glass-card">
+              ${sectionTitle(data, "contact")}
+              ${contactList(data)}
+              <div style="margin-top:18px;">
+                ${sectionTitle(data, "skills")}
+                ${skillMeters(data)}
+              </div>
+              <div style="margin-top:18px;">
+                ${sectionTitle(data, "toolsShort")}
+                ${chips(data.toolsShort)}
+              </div>
+            </aside>
+          </section>
+        </section>
+      </div>
+    `;
+  }
+
+  function renderNeumorphism(data) {
+    return `
+      <div class="resume-page">
+        <section class="neu-shell">
+          <section class="neu-hero">
+            <div>
+              ${identity(data)}
+              ${summary(data)}
+              <div style="margin-top:18px;">${metricLine(data)}</div>
+            </div>
+            <div class="neu-photo">
+              ${photo(data)}
+            </div>
+          </section>
+          <section class="neu-grid">
+            <div class="neu-card">
+              ${sectionTitle(data, "jobs")}
+              ${jobGrid(data.jobs)}
+            </div>
+            <aside class="neu-card">
+              ${sectionTitle(data, "contact")}
+              ${contactList(data)}
+              <div style="margin-top:18px;">
+                ${sectionTitle(data, "skills")}
+                ${skillMeters(data)}
+              </div>
+              <div style="margin-top:18px;">
+                ${sectionTitle(data, "toolsShort")}
+                ${chips(data.toolsShort)}
+              </div>
+            </aside>
+          </section>
+        </section>
+      </div>
+    `;
+  }
+
+  function renderCyberpunk(data) {
+    return `
+      <div class="resume-page">
+        <section class="cyber-shell">
+          <section class="cyber-hero">
+            <div>
+              ${identity(data)}
+              ${summary(data)}
+              <div style="margin-top:18px;">${metricLine(data)}</div>
+            </div>
+            <div class="cyber-photo">
+              ${photo(data)}
+            </div>
+          </section>
+          <section class="cyber-grid">
+            <div class="cyber-card">
+              ${sectionTitle(data, "jobs")}
+              ${jobGrid(data.jobs)}
+            </div>
+            <aside class="cyber-card">
+              ${sectionTitle(data, "contact")}
+              ${contactList(data)}
+              <div style="margin-top:18px;">
+                ${sectionTitle(data, "skills")}
+                ${skillMeters(data)}
+              </div>
+              <div style="margin-top:18px;">
+                ${sectionTitle(data, "toolsShort")}
+                ${chips(data.toolsShort)}
+              </div>
+            </aside>
+          </section>
+        </section>
+      </div>
+    `;
+  }
+
+  function renderTerminal(data) {
+    return `
+      <div class="resume-page">
+        <section class="terminal-shell">
+          <section class="terminal-head">
+            <div>
+              ${identity(data)}
+              ${summary(data)}
+              <div style="margin-top:18px;">${metricLine(data)}</div>
+            </div>
+            <div class="terminal-photo">
+              ${photo(data)}
+            </div>
+          </section>
+          <section class="terminal-grid">
+            <div class="terminal-card">
+              ${sectionTitle(data, "jobs")}
+              ${jobGrid(data.jobs)}
+            </div>
+            <aside class="terminal-card">
+              ${sectionTitle(data, "contact")}
+              ${contactList(data)}
+              <div style="margin-top:18px;">
+                ${sectionTitle(data, "skills")}
+                ${skillMeters(data)}
+              </div>
+              <div style="margin-top:18px;">
+                ${sectionTitle(data, "toolsShort")}
+                ${chips(data.toolsShort)}
+              </div>
+            </aside>
+          </section>
+        </section>
+      </div>
+    `;
+  }
+
+  function renderY2k(data) {
+    return `
+      <div class="resume-page">
+        <section class="y2k-shell">
+          <section class="y2k-hero">
+            <div>
+              ${identity(data)}
+              ${summary(data)}
+              <div style="margin-top:18px;">${metricLine(data)}</div>
+            </div>
+            <div class="y2k-photo">
+              ${photo(data)}
+            </div>
+          </section>
+          <section class="y2k-grid">
+            <div class="y2k-card">
+              ${sectionTitle(data, "jobs")}
+              ${jobGrid(data.jobs)}
+            </div>
+            <aside class="y2k-card">
+              ${sectionTitle(data, "contact")}
+              ${contactList(data)}
+              <div style="margin-top:18px;">
+                ${sectionTitle(data, "skills")}
+                ${skillMeters(data)}
+              </div>
+              <div style="margin-top:18px;">
+                ${sectionTitle(data, "toolsShort")}
+                ${chips(data.toolsShort)}
+              </div>
+            </aside>
+          </section>
+        </section>
+      </div>
+    `;
+  }
+
+  function renderMemphis(data) {
+    return `
+      <div class="resume-page">
+        <section class="memphis-shell">
+          <section class="memphis-hero">
+            <div>
+              ${identity(data)}
+              ${summary(data)}
+              <div style="margin-top:18px;">${metricLine(data)}</div>
+            </div>
+            <div class="memphis-photo">
+              ${photo(data)}
+            </div>
+          </section>
+          <section class="memphis-grid">
+            <div class="memphis-card">
+              ${sectionTitle(data, "jobs")}
+              ${jobGrid(data.jobs)}
+            </div>
+            <aside class="memphis-card pop">
+              ${sectionTitle(data, "contact")}
+              ${contactList(data)}
+              <div style="margin-top:18px;">
+                ${sectionTitle(data, "skills")}
+                ${skillMeters(data)}
+              </div>
+              <div style="margin-top:18px;">
+                ${sectionTitle(data, "toolsShort")}
+                ${chips(data.toolsShort)}
+              </div>
+            </aside>
+          </section>
         </section>
       </div>
     `;
