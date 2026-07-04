@@ -82,7 +82,7 @@ h1, h2, h3, p { margin-top: 0; }
 p { margin-bottom: 12px; }
 .resume-root {
   min-height: 100vh;
-  background: var(--theme-bg);
+  background: transparent;
   color: var(--theme-ink);
 }
 .resume-page {
@@ -101,6 +101,7 @@ p { margin-bottom: 12px; }
   background: var(--photo-bg, #eef2f4);
   border-radius: 8px;
   padding: 8px;
+  transition: background-color .7s ease;
 }
 .panel,
 .card,
@@ -275,8 +276,10 @@ p { margin-bottom: 12px; }
 .brand {
   display: grid;
   align-content: center;
+  align-items: center;
+  justify-items: stretch;
   gap: 18px;
-  min-height: 720px;
+  min-height: calc(100vh - 128px);
   padding: 34px;
   color: #fff;
   background: linear-gradient(160deg, var(--theme-accent), var(--theme-accent-3));
@@ -394,7 +397,7 @@ p { margin-bottom: 12px; }
 .cover-photo::before {
   content: "";
   position: absolute;
-  inset: 18px -16px -16px 18px;
+  inset: 8px -8px -8px 8px;
   border: 1px solid var(--theme-accent);
   border-radius: 8px;
   z-index: -1;
@@ -907,6 +910,7 @@ p { margin-bottom: 12px; }
   let dataVersion = 0;
   let renderToken = 0;
   let idlePrebuildId = null;
+  let photoColorTimer = null;
   const themeViewCache = new Map();
   const runWhenIdle = window.requestIdleCallback || function (callback) {
     return window.setTimeout(function () {
@@ -1549,8 +1553,33 @@ self.onmessage = async function (event) {
     root.querySelectorAll("img[data-theme-photo]").forEach(function (target) {
       target.setAttribute("src", photoPath);
       target.setAttribute("alt", `${data.profile.name || "履歷"} 個人照片`);
-      target.style.setProperty("--photo-bg", pickRandom(photoBackgrounds));
     });
+    updatePhotoBackgrounds(root);
+    startPhotoBackgroundCycle();
+  }
+
+  function startPhotoBackgroundCycle() {
+    if (photoColorTimer) return;
+
+    photoColorTimer = window.setInterval(function () {
+      updatePhotoBackgrounds(resumeRoot);
+    }, 5000);
+  }
+
+  function updatePhotoBackgrounds(root) {
+    root.querySelectorAll("img[data-theme-photo]").forEach(function (target) {
+      target.style.setProperty("--photo-bg", pickNextPhotoBackground(target));
+    });
+  }
+
+  function pickNextPhotoBackground(target) {
+    const currentColor = target.dataset.photoBg || "";
+    const availableColors = photoBackgrounds.filter(function (color) {
+      return color !== currentColor;
+    });
+    const nextColor = pickRandom(availableColors.length ? availableColors : photoBackgrounds);
+    target.dataset.photoBg = nextColor;
+    return nextColor;
   }
 
   function contactList(data) {

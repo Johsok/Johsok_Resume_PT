@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>履歷 Resume</title>
   <link rel="preload" href="theme.js" as="script">
+  <link rel="preload" href="bg.js" as="script">
   <link rel="preload" href="data.json" as="fetch" type="application/json">
   <link rel="preload" href="myphoto.png" as="image">
   <style>
@@ -19,12 +20,21 @@
       line-height: 1.6;
       letter-spacing: 0;
     }
-    .theme-control {
+    .top-controls {
       position: fixed;
       top: 8px;
-      right: 8px;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 1000;
       display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      width: max-content;
+      max-width: calc(100vw - 16px);
+    }
+    .control-group {
+      display: inline-flex;
       align-items: center;
       gap: 4px;
       padding: 3px 5px;
@@ -35,11 +45,11 @@
       font-size: 12px;
       line-height: 1.2;
     }
-    .theme-control label {
+    .control-group label {
       font-weight: 700;
       white-space: nowrap;
     }
-    .theme-control select {
+    .control-group select {
       width: 8.5em;
       min-height: 24px;
       border: 1px solid rgba(130, 150, 145, .55);
@@ -49,8 +59,18 @@
       font: inherit;
       padding: 1px 4px;
     }
+    .dynamic-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      background: transparent;
+    }
     .resume-root {
       min-height: 100vh;
+      position: relative;
+      z-index: 1;
     }
     .loading,
     .error {
@@ -64,19 +84,29 @@
       border-radius: 8px;
     }
     @media print {
-      .theme-control { display: none; }
+      .top-controls,
+      .dynamic-bg { display: none; }
     }
   </style>
   <style id="themeStyle"></style>
 </head>
 <body>
-  <div class="theme-control">
-    <label for="themeSelect">風格</label>
-    <select id="themeSelect" aria-label="風格"></select>
+  <div id="dynamicBackground" class="dynamic-bg" aria-hidden="true"></div>
+
+  <div class="top-controls">
+    <div class="control-group">
+      <label for="themeSelect">風格</label>
+      <select id="themeSelect" aria-label="風格"></select>
+    </div>
+    <div class="control-group">
+      <label for="bgSelect">背景</label>
+      <select id="bgSelect" aria-label="動態背景"></select>
+    </div>
   </div>
 
   <main id="resumeRoot" class="resume-root loading" aria-live="polite">正在讀取 data.json</main>
 
+  <script src="bg.js" defer></script>
   <script src="theme.js" defer></script>
 </body>
 </html>
