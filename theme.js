@@ -363,6 +363,23 @@ p { margin-bottom: 12px; }
   align-items: end;
   margin-bottom: 18px;
 }
+.theme-modular .modular-header > div,
+.theme-editorial .editorial-copy,
+.theme-clinical .portfolio-head > div {
+  padding: 22px;
+  color: var(--theme-ink);
+  background: var(--theme-island-bg, rgba(255, 255, 255, .97));
+  border: 1px solid var(--theme-island-line, var(--theme-line));
+  border-radius: 8px;
+  box-shadow: var(--theme-island-shadow, var(--theme-shadow));
+}
+.theme-modular .card,
+.theme-editorial .panel,
+.theme-clinical .portfolio-card {
+  background: var(--theme-island-bg, rgba(255, 255, 255, .97));
+  border-color: var(--theme-island-line, var(--theme-line));
+  box-shadow: var(--theme-island-shadow, var(--theme-shadow));
+}
 .modular-header .theme-photo {
   box-shadow: 0 18px 38px rgba(35, 33, 43, .12);
 }
@@ -577,6 +594,76 @@ p { margin-bottom: 12px; }
   background: var(--theme-card);
   border: 1px solid var(--theme-line);
 }
+.focus-sheet {
+  display: grid;
+  gap: 16px;
+}
+.focus-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 16px;
+  align-items: stretch;
+}
+.focus-nameplate {
+  display: grid;
+  align-content: end;
+  min-height: 300px;
+  padding: 30px;
+  color: #fff;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.16), transparent 42%),
+    linear-gradient(145deg, var(--theme-accent), var(--theme-accent-3));
+  border-radius: 8px;
+  box-shadow: var(--theme-shadow);
+}
+.focus-nameplate .role,
+.focus-nameplate .muted {
+  color: rgba(255, 255, 255, .84);
+}
+.focus-photo {
+  padding: 14px;
+  background: var(--theme-paper);
+  border: 1px solid var(--theme-line);
+  border-radius: 8px;
+  box-shadow: var(--theme-shadow);
+}
+.focus-photo .theme-photo {
+  height: 100%;
+  min-height: 272px;
+}
+.focus-ribbon {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.focus-ribbon .metric {
+  color: #fff;
+  background: rgba(255, 255, 255, .14);
+  border-left-color: rgba(255, 255, 255, .54);
+}
+.focus-ribbon .metric span {
+  color: rgba(255, 255, 255, .80);
+}
+.focus-main {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 16px;
+  align-items: start;
+}
+.focus-stack {
+  display: grid;
+  gap: 16px;
+}
+.focus-section {
+  padding: 20px;
+  background: var(--theme-paper);
+  border: 1px solid var(--theme-line);
+  border-radius: 8px;
+  box-shadow: var(--theme-shadow);
+}
+.focus-section.accent {
+  border-top: 5px solid var(--theme-accent-2);
+}
 @media (max-width: 900px) {
   .resume-page { width: min(100% - 24px, 720px); padding-top: 50px; }
   .dash,
@@ -587,7 +674,9 @@ p { margin-bottom: 12px; }
   .editorial,
   .matrix-head,
   .classic,
-  .portfolio-head {
+  .portfolio-head,
+  .focus-top,
+  .focus-main {
     grid-template-columns: 1fr;
   }
   .identity,
@@ -600,6 +689,7 @@ p { margin-bottom: 12px; }
   .matrix-grid,
   .facts,
   .metric-band,
+  .focus-ribbon,
   .portfolio-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -611,6 +701,10 @@ p { margin-bottom: 12px; }
   .card,
   .tile {
     margin-bottom: 14px;
+  }
+  .focus-photo .theme-photo {
+    height: auto;
+    min-height: 0;
   }
   .ats-paper {
     overflow-x: auto;
@@ -626,12 +720,14 @@ p { margin-bottom: 12px; }
   .matrix-grid,
   .facts,
   .metric-band,
+  .focus-ribbon,
   .portfolio-grid {
     grid-template-columns: 1fr;
   }
   .dash h1,
   .split h1,
   .editorial h1,
+  .focus-nameplate h1,
   .portfolio h1 {
     font-size: 2.35rem;
   }
@@ -765,6 +861,9 @@ p { margin-bottom: 12px; }
   --theme-accent-3: #4c7c8d;
   --theme-shadow: 0 18px 45px rgba(39, 35, 49, .10);
   --theme-texture: none;
+  --theme-island-bg: rgba(255, 255, 255, .97);
+  --theme-island-line: #ded6ea;
+  --theme-island-shadow: 0 18px 45px rgba(39, 35, 49, .10);
 }
 `,
       render: renderModular
@@ -787,6 +886,9 @@ p { margin-bottom: 12px; }
   --theme-accent-3: #304f65;
   --theme-shadow: 0 18px 45px rgba(20, 20, 20, .10);
   --theme-texture: none;
+  --theme-island-bg: rgba(255, 255, 255, .97);
+  --theme-island-line: #dfdbd3;
+  --theme-island-shadow: 0 18px 45px rgba(20, 20, 20, .10);
 }
 `,
       render: renderEditorial
@@ -861,25 +963,26 @@ p { margin-bottom: 12px; }
     },
     {
       id: "ats",
-      label: "09_列印表格",
-      className: "theme-ats",
+      label: "09_焦點卡片",
+      className: "theme-focus",
       css: `
 :root {
-  --theme-bg: #eef2f1;
-  --theme-ink: #111;
-  --theme-muted: #555;
-  --theme-line: #111;
-  --theme-soft: #f6f6f6;
-  --theme-paper: #fff;
-  --theme-card: #fff;
-  --theme-accent: #111;
-  --theme-accent-2: #333;
-  --theme-accent-3: #555;
-  --theme-shadow: none;
-  --theme-texture: none;
+  --theme-bg: #f6f2ec;
+  --theme-ink: #20242a;
+  --theme-muted: #6d6a65;
+  --theme-line: #e0d5c7;
+  --theme-soft: #f2e8dc;
+  --theme-paper: rgba(255, 255, 255, .97);
+  --theme-card: #fffaf3;
+  --theme-accent: #7d3f3a;
+  --theme-accent-2: #c7923f;
+  --theme-accent-3: #223d57;
+  --theme-shadow: 0 18px 44px rgba(50, 36, 27, .13);
+  --theme-texture: radial-gradient(circle at 16% 18%, rgba(199,146,63,.14), transparent 24%),
+                   linear-gradient(135deg, rgba(34,61,87,.08), transparent 56%);
 }
 `,
-      render: renderAts
+      render: renderFocus
     },
     {
       id: "clinical",
@@ -899,6 +1002,9 @@ p { margin-bottom: 12px; }
   --theme-accent-3: #2d6f9f;
   --theme-shadow: 0 18px 44px rgba(22, 37, 29, .11);
   --theme-texture: none;
+  --theme-island-bg: rgba(255, 255, 255, .97);
+  --theme-island-line: #d3e2d8;
+  --theme-island-shadow: 0 18px 44px rgba(22, 37, 29, .11);
 }
 `,
       render: renderClinical
@@ -954,8 +1060,9 @@ p { margin-bottom: 12px; }
 
   function getInitialThemeId() {
     const themeParam = new URLSearchParams(window.location.search).get("theme");
-    const selected = themeParam || themes[0].id;
-    return themes.some(function (theme) { return theme.id === selected; }) ? selected : themes[0].id;
+    const defaultThemeId = themes.some(function (theme) { return theme.id === "dashboard"; }) ? "dashboard" : themes[0].id;
+    const selected = themeParam || defaultThemeId;
+    return themes.some(function (theme) { return theme.id === selected; }) ? selected : defaultThemeId;
   }
 
   function listenForPreviewData() {
@@ -1421,6 +1528,50 @@ self.onmessage = async function (event) {
             ${sectionTitle(data, "toolsShort")}
             ${chips(data.toolsShort)}
           </article>
+        </section>
+      </div>
+    `;
+  }
+
+  function renderFocus(data) {
+    return `
+      <div class="resume-page">
+        <section class="focus-sheet">
+          <section class="focus-top">
+            <div class="focus-nameplate">
+              ${identity(data)}
+              <div class="focus-ribbon">${metrics(data).map(metricCard).join("")}</div>
+            </div>
+            <div class="focus-photo">
+              ${photo(data)}
+            </div>
+          </section>
+          <section class="focus-main">
+            <div class="focus-stack">
+              <article class="focus-section accent">
+                ${sectionTitle(data, "summary")}
+                ${summary(data)}
+              </article>
+              <article class="focus-section">
+                ${sectionTitle(data, "jobs")}
+                ${jobGrid(data.jobs)}
+              </article>
+            </div>
+            <aside class="focus-stack">
+              <article class="focus-section">
+                ${sectionTitle(data, "contact")}
+                ${contactList(data)}
+              </article>
+              <article class="focus-section accent">
+                ${sectionTitle(data, "skills")}
+                ${skillMeters(data)}
+              </article>
+              <article class="focus-section">
+                ${sectionTitle(data, "toolsShort")}
+                ${chips(data.toolsShort)}
+              </article>
+            </aside>
+          </section>
         </section>
       </div>
     `;
