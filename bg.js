@@ -35,7 +35,7 @@
     { id: "ink", label: "01_流體墨水背景", className: "bg-ink" },
     { id: "network", label: "02_粒子連線網絡", className: "bg-network" },
     { id: "ecg", label: "03_脈衝心電圖背景", className: "bg-ecg" },
-    { id: "prism", label: "04_玻璃折射光帶", className: "bg-prism" },
+    { id: "prism", label: "04_科技幾何動態背景", className: "bg-prism" },
     { id: "wireframe", label: "05_漂浮3D幾何線框", className: "bg-wireframe" },
     { id: "contour", label: "06_動態等高線地圖", className: "bg-contour" },
     { id: "lightRain", label: "07_光點雨幕", className: "bg-light-rain" },
@@ -168,22 +168,23 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-bento
   animation: bgPulseGlow 4s ease-in-out infinite alternate;
 }
 .bg-prism {
-  background: linear-gradient(135deg, #fbfcff, #edf5f3 52%, #f8f2ee);
+  background: radial-gradient(circle at 50% 18%, #10283c, #06111b 48%, #03070f);
 }
 .bg-prism::before {
   background:
-    linear-gradient(68deg, transparent 10%, rgba(255,255,255,.54) 22%, transparent 34%),
-    linear-gradient(112deg, transparent 18%, rgba(98, 170, 224, .18) 32%, transparent 48%),
-    linear-gradient(48deg, transparent 42%, rgba(224, 155, 92, .16) 54%, transparent 68%);
-  filter: blur(6px);
-  animation: bgPrismSweep 12s ease-in-out infinite alternate;
+    radial-gradient(circle at 18% 22%, rgba(0, 229, 255, .18), transparent 19%),
+    radial-gradient(circle at 82% 26%, rgba(255, 46, 193, .16), transparent 18%),
+    radial-gradient(circle at 52% 82%, rgba(118, 255, 122, .13), transparent 22%);
+  filter: blur(14px);
+  animation: bgFloat 10s ease-in-out infinite alternate;
 }
 .bg-prism::after {
   background:
-    linear-gradient(115deg, transparent 26%, rgba(255,255,255,.42), transparent 42%),
-    linear-gradient(80deg, transparent 48%, rgba(105, 190, 158, .14), transparent 62%);
+    linear-gradient(90deg, rgba(72, 214, 255, .09) 1px, transparent 1px) 0 0 / 46px 46px,
+    linear-gradient(0deg, rgba(72, 214, 255, .065) 1px, transparent 1px) 0 0 / 46px 46px,
+    linear-gradient(115deg, transparent 34%, rgba(255,255,255,.10), transparent 47%);
   mix-blend-mode: screen;
-  animation: bgSlide 9s ease-in-out infinite alternate;
+  animation: bgDrift 18s linear infinite;
 }
 .bg-wireframe {
   background: linear-gradient(150deg, #081118, #17252a 55%, #221f28);
@@ -591,7 +592,7 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-bento
       ink: 30,
       network: 110,
       ecg: 70,
-      prism: 60,
+      prism: 72,
       wireframe: 34,
       contour: 58,
       lightRain: 170,
@@ -744,28 +745,67 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-bento
   }
 
   function drawPrism(time) {
-    clearWithGradient("#fbfcff", "#eef6f1");
-    ctx.globalCompositeOperation = "screen";
-    [width * .08, width * .92].forEach(function (sideX, sideIndex) {
-      for (let band = 0; band < 7; band += 1) {
-        const side = sideIndex === 0 ? -1 : 1;
-        const y = ((time * (42 + band * 6) + band * 120) % (height + 220)) - 110;
-        const x = sideX + Math.sin(time * .8 + band) * 32 * side;
-        const strip = ctx.createLinearGradient(x - 170 * side, y - 70, x + 210 * side, y + 110);
-        strip.addColorStop(0, "rgba(255,255,255,0)");
-        strip.addColorStop(.34, band % 3 === 0 ? "rgba(91, 168, 224, .34)" : "rgba(255,255,255,.52)");
-        strip.addColorStop(.64, band % 3 === 1 ? "rgba(224, 164, 94, .26)" : "rgba(101, 190, 158, .24)");
-        strip.addColorStop(1, "rgba(255,255,255,0)");
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(side * (.52 + band * .025));
-        ctx.fillStyle = strip;
-        ctx.fillRect(-180, -42, 460, 86);
-        ctx.restore();
-      }
+    clearWithGradient("#040813", "#0a1f2d");
+    drawGeometryGrid(time);
+
+    const cycleDuration = 5.4;
+    const drawDuration = .82;
+    const fadeDuration = .44;
+    const shapes = ["circle", "triangle", "square", "diamond", "pentagon", "hexagon", "octagon", "star", "cross", "chevron"];
+    const palette = [
+      { stroke: "#00e5ff", fill: "rgba(0, 229, 255, .18)", glow: "rgba(0, 229, 255, .32)" },
+      { stroke: "#ff2ec1", fill: "rgba(255, 46, 193, .17)", glow: "rgba(255, 46, 193, .30)" },
+      { stroke: "#76ff7a", fill: "rgba(118, 255, 122, .16)", glow: "rgba(118, 255, 122, .28)" },
+      { stroke: "#ffd43b", fill: "rgba(255, 212, 59, .16)", glow: "rgba(255, 212, 59, .30)" },
+      { stroke: "#7c5cff", fill: "rgba(124, 92, 255, .18)", glow: "rgba(124, 92, 255, .32)" },
+      { stroke: "#ff7b2f", fill: "rgba(255, 123, 47, .16)", glow: "rgba(255, 123, 47, .28)" },
+      { stroke: "#2d8cff", fill: "rgba(45, 140, 255, .18)", glow: "rgba(45, 140, 255, .30)" },
+      { stroke: "#00ffc6", fill: "rgba(0, 255, 198, .16)", glow: "rgba(0, 255, 198, .28)" },
+      { stroke: "#ff4d6d", fill: "rgba(255, 77, 109, .16)", glow: "rgba(255, 77, 109, .28)" },
+      { stroke: "#b4ff00", fill: "rgba(180, 255, 0, .15)", glow: "rgba(180, 255, 0, .27)" }
+    ];
+
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    const nodes = particles.map(function (particle, index) {
+      const tech = getTechParticle(particle, index, shapes.length);
+      const variableSpeed = clamp(
+        tech.speed * (.90 + Math.sin(time * tech.turn + particle.phase) * .08 + Math.cos(time * tech.turn * 1.9 + index) * .06),
+        30,
+        100
+      );
+      tech.angle += Math.sin(time * .9 + particle.phase) * .018 + Math.cos(time * .53 + index) * .011;
+      particle.x += Math.cos(tech.angle) * variableSpeed * .016;
+      particle.y += Math.sin(tech.angle) * variableSpeed * .016;
+      wrapParticle(particle, 120);
+
+      const local = (time + tech.drawOffset) % cycleDuration;
+      const progress = easeOutCubic(clamp(local / drawDuration, 0, 1));
+      const fade = local > cycleDuration - fadeDuration
+        ? 1 - (local - (cycleDuration - fadeDuration)) / fadeDuration
+        : 1;
+      const alpha = clamp(fade, 0, 1) * (.62 + index % 4 * .08);
+      const radius = Math.min(62, Math.max(22, particle.r * 1.08 + 16)) * tech.scale;
+
+      return {
+        x: particle.x,
+        y: particle.y,
+        radius: radius,
+        shape: shapes[tech.shape],
+        rotation: tech.rotation + time * tech.spin,
+        progress: progress,
+        alpha: alpha,
+        palette: palette[index % palette.length],
+        phase: particle.phase,
+        speed: variableSpeed
+      };
     });
-    ctx.globalCompositeOperation = "source-over";
-    drawSoftParticles(time, ["rgba(255,255,255,.24)", "rgba(85,164,206,.10)", "rgba(213,150,93,.10)"]);
+
+    drawTechLinks(nodes, time);
+    nodes.forEach(function (node) {
+      drawFlatTechShape(node.x, node.y, node.radius, node.shape, node.rotation, node.progress, node.alpha, node.palette, node.phase);
+    });
+    drawTechScanLines(time);
   }
 
   function drawWireframe(time) {
@@ -1358,6 +1398,360 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-bento
     ctx.fill();
   }
 
+  function drawGeometryGrid(time) {
+    const gap = 46;
+    const offset = time * 18 % gap;
+
+    ctx.save();
+    ctx.globalCompositeOperation = "screen";
+    ctx.strokeStyle = "rgba(0, 229, 255, .075)";
+    ctx.lineWidth = 1;
+    for (let x = -gap; x <= width + gap; x += gap) {
+      ctx.beginPath();
+      ctx.moveTo(x + offset, 0);
+      ctx.lineTo(x + offset, height);
+      ctx.stroke();
+    }
+    for (let y = -gap; y <= height + gap; y += gap) {
+      ctx.beginPath();
+      ctx.moveTo(0, y + offset);
+      ctx.lineTo(width, y + offset);
+      ctx.stroke();
+    }
+
+    ctx.strokeStyle = "rgba(255, 46, 193, .045)";
+    for (let x = -width; x <= width * 2; x += gap * 3) {
+      ctx.beginPath();
+      ctx.moveTo(x - offset * 1.6, 0);
+      ctx.lineTo(x - offset * 1.6 + height * .72, height);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function getTechParticle(particle, index, shapeCount) {
+    if (!particle.tech) {
+      particle.tech = {
+        shape: index % shapeCount,
+        speed: 30 + Math.random() * 70,
+        angle: Math.random() * Math.PI * 2,
+        turn: .72 + Math.random() * 1.45,
+        spin: (Math.random() < .5 ? -1 : 1) * (.18 + Math.random() * .44),
+        scale: .74 + Math.random() * .56,
+        rotation: Math.random() * Math.PI * 2,
+        drawOffset: Math.random() * 5.4
+      };
+    }
+    return particle.tech;
+  }
+
+  function wrapParticle(particle, margin) {
+    if (particle.x < -margin) particle.x = width + margin;
+    if (particle.x > width + margin) particle.x = -margin;
+    if (particle.y < -margin) particle.y = height + margin;
+    if (particle.y > height + margin) particle.y = -margin;
+  }
+
+  function drawTechLinks(nodes, time) {
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.lineWidth = .85;
+    for (let index = 0; index < nodes.length; index += 1) {
+      const node = nodes[index];
+      for (let next = index + 1; next < Math.min(nodes.length, index + 8); next += 1) {
+        const other = nodes[next];
+        const distance = Math.hypot(node.x - other.x, node.y - other.y);
+        if (distance > 145) continue;
+        const alpha = (1 - distance / 145) * .18 * Math.min(node.alpha, other.alpha);
+        ctx.strokeStyle = colorWithAlpha(node.palette.stroke, alpha);
+        ctx.beginPath();
+        ctx.moveTo(node.x, node.y);
+        ctx.lineTo(other.x, other.y);
+        ctx.stroke();
+
+        if ((index + next) % 9 === 0) {
+          const pulse = (Math.sin(time * 3.2 + index) + 1) / 2;
+          drawCircle(node.x + (other.x - node.x) * pulse, node.y + (other.y - node.y) * pulse, 2.2, colorWithAlpha(other.palette.stroke, .72), "rgba(255,255,255,.25)");
+        }
+      }
+    }
+    ctx.restore();
+  }
+
+  function drawFlatTechShape(x, y, radius, shape, rotation, progress, alpha, palette, phase) {
+    const faceProgress = clamp((progress - .58) / .42, 0, 1);
+
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = alpha;
+    drawGeometryGlow(x, y, radius * 1.05, palette.glow);
+
+    ctx.lineWidth = Math.max(1.4, radius * .052);
+    ctx.strokeStyle = palette.stroke;
+    ctx.fillStyle = palette.fill;
+
+    if (shape === "circle") {
+      if (faceProgress > 0) {
+        ctx.globalAlpha = alpha * faceProgress;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = alpha;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, -Math.PI / 2 + rotation, -Math.PI / 2 + rotation + Math.PI * 2 * progress);
+      ctx.stroke();
+
+      if (progress > .95) {
+        ctx.globalAlpha = alpha * .62;
+        ctx.lineWidth = Math.max(1, radius * .028);
+        ctx.beginPath();
+        ctx.ellipse(x, y, radius * .58, radius * .24, rotation + Math.sin(phase) * .28, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.restore();
+      return;
+    }
+
+    const points = makeFlatShapePoints(shape, radius, rotation);
+    if (faceProgress > 0) {
+      ctx.globalAlpha = alpha * faceProgress;
+      fillGeometry(points.map(function (point) {
+        return { x: x + point.x, y: y + point.y };
+      }));
+    }
+
+    ctx.globalAlpha = alpha;
+    drawPolylineProgress(points.map(function (point) {
+      return { x: x + point.x, y: y + point.y };
+    }), progress, palette.stroke, Math.max(1.4, radius * .052));
+
+    if (progress > .95) {
+      ctx.globalAlpha = alpha * .50;
+      ctx.lineWidth = Math.max(.9, radius * .022);
+      ctx.beginPath();
+      ctx.moveTo(x - Math.cos(rotation) * radius * .35, y - Math.sin(rotation) * radius * .35);
+      ctx.lineTo(x + Math.cos(rotation) * radius * .35, y + Math.sin(rotation) * radius * .35);
+      ctx.moveTo(x - Math.sin(rotation) * radius * .28, y + Math.cos(rotation) * radius * .28);
+      ctx.lineTo(x + Math.sin(rotation) * radius * .28, y - Math.cos(rotation) * radius * .28);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  }
+
+  function makeFlatShapePoints(shape, radius, rotation) {
+    if (shape === "triangle") return makeRegularShape(3, radius, rotation - Math.PI / 2);
+    if (shape === "square") return makeRegularShape(4, radius, rotation + Math.PI / 4);
+    if (shape === "diamond") return makeRegularShape(4, radius, rotation);
+    if (shape === "pentagon") return makeRegularShape(5, radius, rotation - Math.PI / 2);
+    if (shape === "hexagon") return makeRegularShape(6, radius, rotation + Math.PI / 6);
+    if (shape === "octagon") return makeRegularShape(8, radius, rotation + Math.PI / 8);
+    if (shape === "star") {
+      return Array.from({ length: 10 }, function (_, index) {
+        const pointRadius = index % 2 === 0 ? radius : radius * .45;
+        const angle = rotation - Math.PI / 2 + index / 10 * Math.PI * 2;
+        return { x: Math.cos(angle) * pointRadius, y: Math.sin(angle) * pointRadius };
+      });
+    }
+    if (shape === "cross") {
+      return scaleRotatePoints([
+        [-.28, -1], [.28, -1], [.28, -.28], [1, -.28], [1, .28], [.28, .28],
+        [.28, 1], [-.28, 1], [-.28, .28], [-1, .28], [-1, -.28], [-.28, -.28]
+      ], radius, rotation);
+    }
+    return scaleRotatePoints([
+      [-.82, -.48], [-.12, -.48], [.82, 0], [-.12, .48], [-.82, .48], [-.34, 0]
+    ], radius, rotation);
+  }
+
+  function makeRegularShape(sides, radius, rotation) {
+    return Array.from({ length: sides }, function (_, index) {
+      const angle = rotation + index / sides * Math.PI * 2;
+      return { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius };
+    });
+  }
+
+  function scaleRotatePoints(points, radius, rotation) {
+    const cos = Math.cos(rotation);
+    const sin = Math.sin(rotation);
+    return points.map(function (point) {
+      const x = point[0] * radius;
+      const y = point[1] * radius;
+      return {
+        x: x * cos - y * sin,
+        y: x * sin + y * cos
+      };
+    });
+  }
+
+  function drawTechScanLines(time) {
+    ctx.save();
+    ctx.globalCompositeOperation = "screen";
+    ctx.globalAlpha = .20;
+    ctx.fillStyle = "rgba(0, 229, 255, .08)";
+    const spacing = 64;
+    const offset = time * 42 % spacing;
+    for (let y = -spacing; y < height + spacing; y += spacing) {
+      ctx.fillRect(0, y + offset, width, 1);
+    }
+
+    const x = (time * 120 % (width + 420)) - 210;
+    const sweep = ctx.createLinearGradient(x - 140, 0, x + 180, height);
+    sweep.addColorStop(0, "rgba(255,255,255,0)");
+    sweep.addColorStop(.5, "rgba(0,229,255,.16)");
+    sweep.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = sweep;
+    ctx.fillRect(0, 0, width, height);
+    ctx.restore();
+  }
+
+  function colorWithAlpha(hex, alpha) {
+    const normalized = hex.replace("#", "");
+    const red = parseInt(normalized.slice(0, 2), 16);
+    const green = parseInt(normalized.slice(2, 4), 16);
+    const blue = parseInt(normalized.slice(4, 6), 16);
+    return `rgba(${red}, ${green}, ${blue}, ${clamp(alpha, 0, 1)})`;
+  }
+
+  function drawExtrudedGeometry(originX, originY, radius, sides, rotation, depth, progress, alpha, palette, phase) {
+    const points = makeGeometryPoints(sides, radius, rotation);
+    const depthX = Math.cos(rotation + .72) * depth;
+    const depthY = Math.sin(rotation + .72) * depth + depth * .58;
+    const front = points.map(function (point) {
+      return { x: originX + point.x, y: originY + point.y };
+    });
+    const back = front.map(function (point) {
+      return { x: point.x + depthX, y: point.y + depthY };
+    });
+    const depthProgress = clamp((progress - .44) / .56, 0, 1);
+    const faceProgress = clamp((progress - .74) / .26, 0, 1);
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    drawGeometryGlow(originX + depthX * .5, originY + depthY * .5, radius, palette.glow);
+
+    if (depthProgress > 0) {
+      ctx.globalAlpha = alpha * depthProgress;
+      ctx.fillStyle = palette.side;
+      ctx.strokeStyle = palette.stroke;
+      ctx.lineWidth = 1;
+      for (let index = 0; index < front.length; index += 1) {
+        const next = (index + 1) % front.length;
+        ctx.beginPath();
+        ctx.moveTo(back[index].x, back[index].y);
+        ctx.lineTo(back[next].x, back[next].y);
+        ctx.lineTo(front[next].x, front[next].y);
+        ctx.lineTo(front[index].x, front[index].y);
+        ctx.closePath();
+        ctx.fill();
+      }
+      drawPolylineProgress(back, progress, palette.stroke, Math.max(1, radius * .018));
+    }
+
+    if (faceProgress > 0) {
+      const fill = ctx.createLinearGradient(originX - radius, originY - radius, originX + radius + depthX, originY + radius + depthY);
+      fill.addColorStop(0, "rgba(255,255,255,.62)");
+      fill.addColorStop(.45, palette.fill);
+      fill.addColorStop(1, "rgba(255,255,255,.08)");
+      ctx.globalAlpha = alpha * faceProgress;
+      ctx.fillStyle = fill;
+      fillGeometry(front);
+    }
+
+    ctx.globalAlpha = alpha;
+    drawPolylineProgress(front, progress, palette.stroke, Math.max(1.4, radius * .026));
+
+    ctx.globalAlpha = alpha * depthProgress;
+    ctx.strokeStyle = palette.stroke;
+    ctx.lineWidth = Math.max(.9, radius * .014);
+    for (let index = 0; index < front.length; index += 1) {
+      if (index / front.length > progress) continue;
+      ctx.beginPath();
+      ctx.moveTo(front[index].x, front[index].y);
+      ctx.lineTo(back[index].x, back[index].y);
+      ctx.stroke();
+    }
+
+    if (sides === 0 && faceProgress > 0) {
+      ctx.globalAlpha = alpha * faceProgress * .68;
+      ctx.strokeStyle = "rgba(255,255,255,.48)";
+      ctx.lineWidth = Math.max(.9, radius * .018);
+      ctx.beginPath();
+      ctx.ellipse(originX, originY, radius * .58, radius * .18, rotation + Math.sin(phase) * .12, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  }
+
+  function makeGeometryPoints(sides, radius, rotation) {
+    const count = sides === 0 ? 42 : sides;
+    const start = sides === 3 ? -Math.PI / 2 : -Math.PI / 2 + Math.PI / count;
+    return Array.from({ length: count }, function (_, index) {
+      const angle = start + index / count * Math.PI * 2 + rotation;
+      return {
+        x: Math.cos(angle) * radius,
+        y: Math.sin(angle) * radius * .78
+      };
+    });
+  }
+
+  function drawPolylineProgress(points, progress, color, lineWidth) {
+    const visible = clamp(progress, 0, 1) * points.length;
+    const full = Math.floor(visible);
+    const partial = visible - full;
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
+    ctx.beginPath();
+    points.forEach(function (point, index) {
+      if (index === 0) ctx.moveTo(point.x, point.y);
+      if (index < full) {
+        const next = points[(index + 1) % points.length];
+        ctx.lineTo(next.x, next.y);
+      } else if (index === full && partial > 0) {
+        const next = points[(index + 1) % points.length];
+        ctx.lineTo(point.x + (next.x - point.x) * partial, point.y + (next.y - point.y) * partial);
+      }
+    });
+    ctx.stroke();
+  }
+
+  function fillGeometry(points) {
+    ctx.beginPath();
+    points.forEach(function (point, index) {
+      if (index === 0) ctx.moveTo(point.x, point.y);
+      else ctx.lineTo(point.x, point.y);
+    });
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function drawGeometryGlow(x, y, radius, color) {
+    const glow = ctx.createRadialGradient(x, y, 0, x, y, radius * 2.1);
+    glow.addColorStop(0, color);
+    glow.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(x, y, radius * 2.1, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function drawGeometryLightSweep(time) {
+    ctx.save();
+    ctx.globalCompositeOperation = "screen";
+    ctx.globalAlpha = .34;
+    const x = (time * 70 % (width + 520)) - 260;
+    const sweep = ctx.createLinearGradient(x - 180, 0, x + 240, height);
+    sweep.addColorStop(0, "rgba(255,255,255,0)");
+    sweep.addColorStop(.5, "rgba(255,255,255,.34)");
+    sweep.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = sweep;
+    ctx.fillRect(0, 0, width, height);
+    ctx.restore();
+  }
+
   function drawCanvasGrid(size, color) {
     const offset = frame * .08 % size;
     ctx.strokeStyle = color;
@@ -1536,6 +1930,14 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .theme-bento
 
   function clamp(value, min, max) {
     return Math.min(max, Math.max(min, value));
+  }
+
+  function easeOutCubic(value) {
+    return 1 - Math.pow(1 - clamp(value, 0, 1), 3);
+  }
+
+  function easeInOutSine(value) {
+    return -(Math.cos(Math.PI * clamp(value, 0, 1)) - 1) / 2;
   }
 
   function escapeHtml(value) {
