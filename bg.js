@@ -5,6 +5,18 @@
   const bgRoot = document.getElementById("dynamicBackground");
   const bgSelect = document.getElementById("bgSelect");
   const styleElement = document.createElement("style");
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  let width = 0;
+  let height = 0;
+  let centerX = 0;
+  let centerY = 0;
+  let animationFrameId = null;
+  let activeBackground = "none";
+  let frame = 0;
+  let stars = [];
+  let particles = [];
+  let meteors = [];
 
   const backgrounds = [
     { id: "none", label: "00_無背景", className: "bg-none" },
@@ -24,6 +36,11 @@
 .dynamic-bg {
   opacity: 1;
   transition: opacity .35s ease, background .35s ease;
+}
+.dynamic-bg canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 .dynamic-bg.bg-none {
   opacity: 0;
@@ -283,10 +300,13 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root
   }
 
   function init() {
-    if (!bgRoot || !bgSelect) return;
+    if (!bgRoot || !bgSelect || !ctx) return;
 
     document.head.appendChild(styleElement);
     styleElement.textContent = backgroundCss;
+    bgRoot.appendChild(canvas);
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
 
     bgSelect.innerHTML = backgrounds.map(function (bg) {
       return `<option value="${escapeAttr(bg.id)}">${escapeHtml(bg.label)}</option>`;
@@ -310,9 +330,348 @@ body[data-dynamic-background]:not([data-dynamic-background="none"]) .resume-root
 
   function applyBackground(id) {
     const bg = backgrounds.find(function (item) { return item.id === id; }) || backgrounds[0];
+    activeBackground = bg.id;
     bgRoot.className = `dynamic-bg ${bg.className}`;
     document.body.dataset.dynamicBackground = bg.id;
     document.documentElement.dataset.dynamicBackground = bg.id;
+    createScene(bg.id);
+
+    if (bg.id === "none") {
+      stopAnimation();
+    } else {
+      startAnimation();
+    }
+  }
+
+  function resizeCanvas() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+    centerX = width / 2;
+    centerY = height / 2;
+    createScene(activeBackground);
+  }
+
+  function startAnimation() {
+    if (animationFrameId !== null) return;
+    animate();
+  }
+
+  function stopAnimation() {
+    if (animationFrameId !== null) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+    }
+    ctx.clearRect(0, 0, width, height);
+  }
+
+  function animate() {
+    animationFrameId = requestAnimationFrame(animate);
+    frame += 1;
+    drawScene(frame * 0.016);
+  }
+
+  function createScene(id) {
+    stars = makeStars(id === "galaxy" ? 420 : id === "stars" ? 520 : 180);
+    particles = makeParticles(id);
+    meteors = [];
+  }
+
+  function makeStars(count) {
+    return Array.from({ length: count }, function () {
+      return {
+        x: Math.random() * width,
+        y: Math.random() * height,
+        r: Math.random() * 1.6 + .25,
+        a: Math.random() * .55 + .25,
+        phase: Math.random() * Math.PI * 2,
+        speed: Math.random() * .018 + .006
+      };
+    });
+  }
+
+  function makeParticles(id) {
+    const counts = {
+      aurora: 28,
+      gradient: 22,
+      bubbles: 46,
+      waves: 38,
+      rain: 130,
+      grid: 36,
+      mist: 34,
+      dust: 180
+    };
+    const count = counts[id] || 60;
+
+    return Array.from({ length: count }, function (_, index) {
+      return {
+        x: Math.random() * width,
+        y: Math.random() * height,
+        r: Math.random() * 34 + 8,
+        a: Math.random() * .38 + .12,
+        vx: (Math.random() - .5) * .65,
+        vy: (Math.random() - .5) * .65,
+        phase: Math.random() * Math.PI * 2,
+        index: index
+      };
+    });
+  }
+
+  function drawScene(time) {
+    if (activeBackground === "none") return;
+
+    const drawMap = {
+      galaxy: drawGalaxy,
+      aurora: drawAurora,
+      gradient: drawGradient,
+      bubbles: drawBubbles,
+      stars: drawStars,
+      waves: drawWaves,
+      rain: drawRain,
+      grid: drawGrid,
+      mist: drawMist,
+      dust: drawDust
+    };
+    const draw = drawMap[activeBackground] || drawGradient;
+    draw(time);
+  }
+
+  function clearWithGradient(top, bottom) {
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, top);
+    gradient.addColorStop(1, bottom);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+  }
+
+  function drawGalaxy(time) {
+    clearWithGradient("#02030b", "#0a1024");
+    drawNebula(time);
+    drawMovingStars(time, 1.2);
+    drawGalaxyCore(time);
+    drawMeteors(time);
+  }
+
+  function drawNebula(time) {
+    [
+      { x: .22 + Math.sin(time * .13) * .04, y: .32, r: .34, c: "rgba(110,76,210,.20)" },
+      { x: .76, y: .62 + Math.cos(time * .11) * .04, r: .30, c: "rgba(42,132,210,.18)" },
+      { x: .52, y: .22, r: .25, c: "rgba(210,88,168,.14)" }
+    ].forEach(function (n) {
+      const g = ctx.createRadialGradient(n.x * width, n.y * height, 0, n.x * width, n.y * height, n.r * Math.min(width, height));
+      g.addColorStop(0, n.c);
+      g.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, width, height);
+    });
+  }
+
+  function drawMovingStars(time, drift) {
+    stars.forEach(function (star) {
+      const x = (star.x + time * 10 * drift) % width;
+      const y = (star.y + time * 5 * drift) % height;
+      const alpha = star.a + Math.sin(time * 2 + star.phase) * .22;
+      ctx.beginPath();
+      ctx.arc(x, y, star.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${clamp(alpha, .06, 1)})`;
+      ctx.fill();
+    });
+  }
+
+  function drawGalaxyCore(time) {
+    ctx.save();
+    ctx.translate(centerX, centerY);
+    ctx.rotate(time * .08);
+    ctx.scale(1.8, .46);
+    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, Math.min(width, height) * .34);
+    g.addColorStop(0, "rgba(255,244,205,.45)");
+    g.addColorStop(.24, "rgba(158,116,255,.28)");
+    g.addColorStop(.72, "rgba(78,146,255,.12)");
+    g.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(0, 0, Math.min(width, height) * .34, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawMeteors(time) {
+    if (Math.random() < .025) {
+      meteors.push({
+        x: Math.random() * width,
+        y: -20,
+        vx: 6 + Math.random() * 6,
+        vy: 5 + Math.random() * 5,
+        life: 1,
+        len: 70 + Math.random() * 80
+      });
+    }
+
+    for (let index = meteors.length - 1; index >= 0; index -= 1) {
+      const meteor = meteors[index];
+      meteor.x += meteor.vx;
+      meteor.y += meteor.vy;
+      meteor.life -= .012;
+
+      if (meteor.life <= 0 || meteor.x > width + 120 || meteor.y > height + 120) {
+        meteors.splice(index, 1);
+        continue;
+      }
+
+      const tailX = meteor.x - meteor.vx * meteor.len / 10;
+      const tailY = meteor.y - meteor.vy * meteor.len / 10;
+      const g = ctx.createLinearGradient(meteor.x, meteor.y, tailX, tailY);
+      g.addColorStop(0, `rgba(255,255,255,${meteor.life})`);
+      g.addColorStop(1, "rgba(120,170,255,0)");
+      ctx.strokeStyle = g;
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(meteor.x, meteor.y);
+      ctx.lineTo(tailX, tailY);
+      ctx.stroke();
+    }
+  }
+
+  function drawAurora(time) {
+    clearWithGradient("#06111f", "#10251f");
+    drawMovingStars(time, .28);
+    for (let band = 0; band < 4; band += 1) {
+      ctx.beginPath();
+      for (let x = -80; x <= width + 80; x += 18) {
+        const y = height * (.25 + band * .12) + Math.sin(x * .008 + time * (1.1 + band * .2)) * (44 + band * 8);
+        if (x === -80) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.lineTo(width + 80, height);
+      ctx.lineTo(-80, height);
+      ctx.closePath();
+      ctx.fillStyle = band % 2 ? "rgba(95,156,255,.11)" : "rgba(91,255,190,.13)";
+      ctx.fill();
+    }
+  }
+
+  function drawGradient(time) {
+    const hueA = 205 + Math.sin(time * .4) * 28;
+    const hueB = 320 + Math.cos(time * .35) * 24;
+    clearWithGradient(`hsl(${hueA}, 78%, 88%)`, `hsl(${hueB}, 72%, 91%)`);
+    drawSoftParticles(time, ["rgba(255,255,255,.30)", "rgba(93,160,255,.20)", "rgba(255,142,207,.20)"]);
+  }
+
+  function drawBubbles(time) {
+    clearWithGradient("#f7fbff", "#eaf8f1");
+    particles.forEach(function (bubble) {
+      bubble.y -= .35 + bubble.r * .004;
+      bubble.x += Math.sin(time + bubble.phase) * .18;
+      if (bubble.y < -80) bubble.y = height + 80;
+      drawCircle(bubble.x, bubble.y, bubble.r, `rgba(120,170,255,${bubble.a})`, `rgba(255,255,255,${bubble.a * .8})`);
+    });
+  }
+
+  function drawStars(time) {
+    clearWithGradient("#0c1324", "#1b273b");
+    drawMovingStars(time, 1.8);
+    drawMeteors(time);
+  }
+
+  function drawWaves(time) {
+    clearWithGradient("#eaf8fb", "#dff3ee");
+    for (let line = 0; line < 8; line += 1) {
+      ctx.beginPath();
+      for (let x = -40; x <= width + 40; x += 18) {
+        const y = height * (.28 + line * .09) + Math.sin(x * .018 + time * (1.2 + line * .08)) * 16;
+        if (x === -40) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = `rgba(42, 139, 163, ${.10 + line * .012})`;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  }
+
+  function drawRain(time) {
+    clearWithGradient("#f6f8fb", "#e8eef8");
+    ctx.strokeStyle = "rgba(74, 106, 154, .28)";
+    ctx.lineWidth = 1;
+    particles.forEach(function (drop) {
+      drop.x += 1.2;
+      drop.y += 4.8;
+      if (drop.y > height + 40) {
+        drop.y = -40;
+        drop.x = Math.random() * width;
+      }
+      ctx.beginPath();
+      ctx.moveTo(drop.x, drop.y);
+      ctx.lineTo(drop.x - 16, drop.y + 34);
+      ctx.stroke();
+    });
+  }
+
+  function drawGrid(time) {
+    clearWithGradient("#fbfaf5", "#eef4f4");
+    const size = 34;
+    ctx.strokeStyle = "rgba(72, 84, 98, .13)";
+    ctx.lineWidth = 1;
+    const offset = (time * 16) % size;
+    for (let x = -size; x < width + size; x += size) {
+      ctx.beginPath();
+      ctx.moveTo(x + offset, 0);
+      ctx.lineTo(x + offset, height);
+      ctx.stroke();
+    }
+    for (let y = -size; y < height + size; y += size) {
+      ctx.beginPath();
+      ctx.moveTo(0, y + offset);
+      ctx.lineTo(width, y + offset);
+      ctx.stroke();
+    }
+    drawSoftParticles(time, ["rgba(207,138,60,.13)", "rgba(49,80,112,.10)"]);
+  }
+
+  function drawMist(time) {
+    clearWithGradient("#fff7e8", "#eaf4ff");
+    drawSoftParticles(time, ["rgba(255,255,255,.45)", "rgba(255,216,161,.22)", "rgba(178,217,255,.28)"]);
+  }
+
+  function drawDust(time) {
+    clearWithGradient("#172030", "#263648");
+    particles.forEach(function (dust) {
+      dust.x += Math.sin(time + dust.phase) * .18 - .08;
+      dust.y -= .32 + dust.r * .002;
+      if (dust.y < -20) dust.y = height + 20;
+      if (dust.x < -20) dust.x = width + 20;
+      ctx.beginPath();
+      ctx.arc(dust.x, dust.y, Math.max(.7, dust.r * .045), 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,226,168,${dust.a})`;
+      ctx.fill();
+    });
+  }
+
+  function drawSoftParticles(time, colors) {
+    particles.forEach(function (particle, index) {
+      const x = particle.x + Math.sin(time * .45 + particle.phase) * 52;
+      const y = particle.y + Math.cos(time * .38 + particle.phase) * 42;
+      const color = colors[index % colors.length];
+      const g = ctx.createRadialGradient(x, y, 0, x, y, particle.r * 2.8);
+      g.addColorStop(0, color);
+      g.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(x, y, particle.r * 2.8, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  function drawCircle(x, y, radius, fill, stroke) {
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = fill;
+    ctx.fill();
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
   }
 
   function escapeHtml(value) {
