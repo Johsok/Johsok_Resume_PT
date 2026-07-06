@@ -274,11 +274,15 @@ p { margin-bottom: 12px; }
   box-shadow: var(--theme-shadow);
 }
 .brand {
+  position: sticky;
+  top: 50px;
+  align-self: start;
   display: grid;
   align-content: center;
   align-items: center;
   justify-items: stretch;
   gap: 18px;
+  height: calc(100vh - 106px);
   min-height: calc(100vh - 106px);
   padding: 34px;
   color: #fff;
@@ -1206,7 +1210,13 @@ p { margin-bottom: 12px; }
   .portfolio-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .brand { min-height: auto; }
+  .brand {
+    position: static;
+    top: auto;
+    align-self: stretch;
+    height: auto;
+    min-height: auto;
+  }
   .cards,
   .bento {
     display: block;
