@@ -280,15 +280,21 @@ p { margin-bottom: 12px; }
   display: grid;
   align-content: center;
   align-items: center;
-  justify-items: stretch;
+  justify-items: center;
   gap: 18px;
   height: calc(100vh - 106px);
   min-height: calc(100vh - 106px);
   padding: 34px;
   color: #fff;
+  text-align: center;
   background: linear-gradient(160deg, var(--theme-accent), var(--theme-accent-3));
 }
+.brand > * {
+  width: min(100%, 300px);
+}
 .brand .theme-photo {
+  width: min(100%, 260px);
+  margin: 0 auto;
   border: 6px solid rgba(255, 255, 255, .18);
 }
 .brand .muted,
