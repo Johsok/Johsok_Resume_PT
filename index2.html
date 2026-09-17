@@ -1,0 +1,1164 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#05070f">
+  <title>履歷 Resume // Metaverse</title>
+  <link rel="preload" href="data.json" as="fetch" type="application/json" crossorigin>
+  <link rel="preload" href="myphoto.png" as="image">
+  <!-- 非阻塞式字型：只影響數字與 HUD 英文，載入失敗自動退回系統字型 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&display=swap" media="print" onload="this.media='all'">
+  <style>
+    /* ========== 基礎變數 ========== */
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    :root {
+      --bg: #05070f;
+      --cyan: #00f0ff;
+      --mag: #ff2bd6;
+      --vio: #7c5cff;
+      --lime: #6cffb0;
+      --amber: #ffd166;
+      --ink: #e8f6ff;
+      --muted: #8fa7bd;
+      --dim: #5f748a;
+      --glass: rgba(9, 14, 34, .74);
+      --glass2: rgba(12, 18, 44, .58);
+      --line: rgba(0, 240, 255, .24);
+      --line2: rgba(255, 43, 214, .24);
+      --font-ui: "Segoe UI", "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", Arial, sans-serif;
+      --font-hud: "Orbitron", "Segoe UI", Arial, sans-serif;
+      --font-mono: Consolas, "Cascadia Mono", "SF Mono", Menlo, monospace;
+      --r: 14px;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-ui);
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    h1, h2, h3, p { margin-top: 0; }
+    ::selection { background: rgba(0, 240, 255, .35); color: #fff; }
+
+    /* ========== 背景層（WebGL + 覆蓋層） ========== */
+    .mv-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+    body.mv-fallback::before {
+      content: "";
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse at 18% 18%, rgba(0, 240, 255, .18), transparent 45%),
+        radial-gradient(ellipse at 82% 72%, rgba(255, 43, 214, .16), transparent 45%),
+        linear-gradient(180deg, #05070f, #0a0f24);
+    }
+    .mv-vignette {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background: radial-gradient(ellipse at 50% 40%, transparent 50%, rgba(2, 3, 10, .7) 100%);
+    }
+    .mv-lines {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: .5;
+      background: repeating-linear-gradient(0deg, rgba(255, 255, 255, .03) 0 1px, transparent 1px 3px);
+    }
+    .mv-scan {
+      position: fixed; left: 0; right: 0; top: -10%; height: 10%; z-index: 2; pointer-events: none;
+      background: linear-gradient(180deg, transparent, rgba(0, 240, 255, .07), transparent);
+      animation: scanDown 9s linear infinite;
+      will-change: transform;
+    }
+    @keyframes scanDown { to { transform: translateY(1200%); } }
+    .mv-cursor {
+      position: fixed; left: 0; top: 0; z-index: 1; pointer-events: none;
+      width: 380px; height: 380px; margin: -190px 0 0 -190px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 240, 255, .2), rgba(124, 92, 255, .09) 45%, transparent 70%);
+      mix-blend-mode: screen; opacity: 0; transition: opacity .4s; will-change: transform;
+    }
+    @media (pointer: coarse) { .mv-cursor { display: none; } }
+
+    /* ========== 進度條與 HUD ========== */
+    #scroll-progress-bar {
+      position: fixed; top: env(safe-area-inset-top, 0px); left: 0; width: 0%; height: 3px; z-index: 9999;
+      background: linear-gradient(90deg, var(--cyan), var(--vio), var(--mag));
+      box-shadow: 0 0 12px rgba(0, 240, 255, .8); transition: width .1s linear; pointer-events: none;
+    }
+    .hud {
+      position: fixed; left: 0; right: 0; top: 0; z-index: 50; pointer-events: none;
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      padding: 16px 24px 22px; font: 600 11px/1 var(--font-mono); letter-spacing: .16em;
+      color: var(--muted); text-transform: uppercase;
+      background: linear-gradient(180deg, rgba(5, 7, 15, .98) 55%, transparent);
+    }
+    .hud b { color: var(--cyan); font-weight: 700; }
+    .hud .dot {
+      display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 7px; vertical-align: middle;
+      background: var(--lime); box-shadow: 0 0 10px var(--lime); animation: blink 1.6s ease-in-out infinite;
+    }
+    .hud-b {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; pointer-events: none;
+      display: flex; justify-content: space-between; padding: 22px 24px 16px;
+      font: 600 11px/1 var(--font-mono); letter-spacing: .16em; color: var(--dim); text-transform: uppercase;
+      background: linear-gradient(0deg, rgba(5, 7, 15, .98) 55%, transparent);
+    }
+    .hud-b b { color: var(--cyan); }
+    .hint { transition: opacity .5s; animation: nudge 1.8s ease-in-out infinite; }
+    .hint.hide { opacity: 0; }
+    @keyframes nudge { 50% { transform: translateY(4px); } }
+    @keyframes blink { 50% { opacity: .25; } }
+    .hud-corner { position: fixed; width: 26px; height: 26px; z-index: 50; pointer-events: none; border: 2px solid rgba(0, 240, 255, .55); }
+    .hud-corner.tl { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
+    .hud-corner.tr { top: 10px; right: 10px; border-left: 0; border-bottom: 0; }
+    .hud-corner.bl { bottom: 10px; left: 10px; border-right: 0; border-top: 0; }
+    .hud-corner.br { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
+
+    /* 右側節點導覽 */
+    .snav { position: fixed; right: 22px; top: 50%; transform: translateY(-50%); z-index: 50; display: grid; gap: 18px; }
+    .snav a { position: relative; display: flex; align-items: center; justify-content: flex-end; height: 12px; }
+    .snav i { display: block; width: 9px; height: 9px; border: 1px solid rgba(0, 240, 255, .55); transform: rotate(45deg); transition: background .3s, box-shadow .3s; }
+    .snav a.on i { background: var(--cyan); box-shadow: 0 0 12px var(--cyan); }
+    .snav span {
+      position: absolute; right: 22px; white-space: nowrap; font: 600 10px/1 var(--font-mono); letter-spacing: .18em;
+      color: var(--cyan); opacity: 0; transform: translateX(6px); transition: opacity .25s, transform .25s;
+    }
+    .snav a:hover span, .snav a.on span { opacity: 1; transform: none; }
+
+    /* ========== 版面 ========== */
+    .page { position: relative; z-index: 3; width: min(1180px, calc(100% - 48px)); margin: 0 auto; padding: 96px 0 90px; }
+    .boot {
+      min-height: 60vh; display: grid; place-content: center; gap: 16px; text-align: center;
+      font: 600 12px/1 var(--font-mono); letter-spacing: .22em; color: var(--cyan);
+    }
+    .boot-bar { width: 260px; height: 3px; background: rgba(255, 255, 255, .08); overflow: hidden; border-radius: 2px; }
+    .boot-bar i { display: block; height: 100%; width: 40%; background: linear-gradient(90deg, var(--cyan), var(--mag)); animation: bootBar 1.1s ease-in-out infinite; }
+    @keyframes bootBar { from { transform: translateX(-100%); } to { transform: translateX(350%); } }
+    .error { text-align: center; padding: 60px 20px; color: var(--mag); font: 600 13px/1.8 var(--font-mono); letter-spacing: .12em; }
+
+    /* 進場動畫 */
+    .boot-in { animation: bootIn .9s cubic-bezier(.2, .8, .2, 1) var(--d, 0s) both; }
+    @keyframes bootIn { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s ease, transform .8s cubic-bezier(.2, .8, .2, 1); transition-delay: var(--d, 0s); }
+    .reveal.in { opacity: 1; transform: none; }
+
+    /* ========== Hero ========== */
+    .hero {
+      display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr); gap: 40px; align-items: center;
+      min-height: calc(100vh - 150px); padding: 10px 0 40px;
+    }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 10px; margin-bottom: 22px; padding: 8px 12px;
+      font: 600 11px/1 var(--font-mono); letter-spacing: .22em; text-transform: uppercase; color: var(--cyan);
+      border: 1px solid var(--line); border-radius: 4px; background: rgba(0, 240, 255, .05);
+    }
+    .eyebrow::before { content: ""; width: 6px; height: 6px; background: var(--cyan); box-shadow: 0 0 8px var(--cyan); transform: rotate(45deg); }
+    .name {
+      position: relative; margin: 0 0 14px; font-size: clamp(2.8rem, 7vw, 6rem); line-height: 1.04; font-weight: 900; letter-spacing: .03em;
+      background: linear-gradient(120deg, #fff 0%, var(--cyan) 45%, var(--mag) 100%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      filter: drop-shadow(0 0 22px rgba(0, 240, 255, .25));
+    }
+    .glitch::before, .glitch::after {
+      content: attr(data-text); position: absolute; inset: 0; opacity: 0; pointer-events: none;
+      -webkit-text-fill-color: currentColor;
+    }
+    .glitch::before { color: var(--cyan); animation: glitch1 7s steps(1, end) infinite; }
+    .glitch::after { color: var(--mag); animation: glitch2 7s steps(1, end) .12s infinite; }
+    @keyframes glitch1 {
+      0%, 88%, 100% { opacity: 0; transform: none; clip-path: inset(0 0 100% 0); }
+      89% { opacity: .9; transform: translate(-5px, 2px); clip-path: inset(10% 0 55% 0); }
+      92% { opacity: .9; transform: translate(4px, -2px); clip-path: inset(60% 0 12% 0); }
+      95% { opacity: 0; }
+    }
+    @keyframes glitch2 {
+      0%, 90%, 100% { opacity: 0; transform: none; clip-path: inset(0 0 100% 0); }
+      91% { opacity: .9; transform: translate(5px, 1px); clip-path: inset(40% 0 30% 0); }
+      94% { opacity: .9; transform: translate(-4px, -1px); clip-path: inset(75% 0 0 0); }
+      97% { opacity: 0; }
+    }
+    .role { min-height: 1.6em; margin: 0 0 10px; font: 700 clamp(1.05rem, 2vw, 1.4rem)/1.3 var(--font-ui); color: var(--cyan); letter-spacing: .04em; }
+    .caret { display: inline-block; width: .55em; height: 1.05em; margin-left: 4px; vertical-align: -.15em; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); animation: blink 1s steps(1) infinite; }
+    .tagline { max-width: 58ch; margin-bottom: 26px; color: var(--muted); font-size: 1.02rem; }
+    .cta { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 32px; }
+    .btn {
+      position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px;
+      font: 700 .82rem/1 var(--font-mono); letter-spacing: .08em; color: var(--ink);
+      background: rgba(0, 240, 255, .08); border: 1px solid var(--line);
+      clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+      transition: background .25s, box-shadow .25s, transform .25s;
+    }
+    .btn:hover { background: rgba(0, 240, 255, .2); box-shadow: 0 0 24px rgba(0, 240, 255, .35); transform: translateY(-2px); }
+    .btn.alt { background: rgba(255, 43, 214, .08); border-color: var(--line2); }
+    .btn.alt:hover { background: rgba(255, 43, 214, .2); box-shadow: 0 0 24px rgba(255, 43, 214, .35); }
+    .btn.ghost { background: transparent; border-color: rgba(255, 255, 255, .16); color: var(--muted); }
+    .btn.ghost:hover { color: #fff; box-shadow: none; background: rgba(255, 255, 255, .06); }
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .metric {
+      position: relative; padding: 16px 16px 14px; overflow: hidden; border-radius: 10px;
+      background: var(--glass2); border: 1px solid rgba(255, 255, 255, .08); border-top: 2px solid var(--cyan);
+    }
+    .metric:nth-child(2) { border-top-color: var(--mag); }
+    .metric:nth-child(3) { border-top-color: var(--vio); }
+    .metric:nth-child(4) { border-top-color: var(--amber); }
+    .metric::after { content: ""; position: absolute; right: -24px; top: -24px; width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle, rgba(0, 240, 255, .22), transparent 70%); }
+    .metric strong { display: block; font: 700 clamp(1.4rem, 2.3vw, 1.9rem)/1.1 var(--font-hud); color: #fff; letter-spacing: .02em; text-shadow: 0 0 18px rgba(0, 240, 255, .45); word-break: break-all; }
+    .metric strong.long { font-size: clamp(1rem, 1.35vw, 1.2rem); letter-spacing: 0; }
+    .metric span { display: block; margin-top: 6px; font-size: .8rem; color: var(--muted); letter-spacing: .04em; }
+
+    /* 全息照片框 */
+    .holo { justify-self: center; width: min(100%, 360px); }
+    .holo-float { position: relative; animation: floaty 6s ease-in-out infinite; }
+    @keyframes floaty { 50% { transform: translateY(-10px); } }
+    .orbit { position: absolute; left: 50%; top: 50%; border-radius: 50%; pointer-events: none; animation: spin linear infinite; }
+    .orbit::before { content: ""; position: absolute; left: 50%; top: -4px; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; }
+    .orbit.o1 { width: calc(100% + 90px); height: calc(100% + 90px); margin: calc(-50% - 45px) 0 0 calc(-50% - 45px); border: 1px dashed rgba(0, 240, 255, .18); animation-duration: 14s; }
+    .orbit.o1::before { background: var(--cyan); box-shadow: 0 0 16px var(--cyan); }
+    .orbit.o2 { width: calc(100% + 150px); height: calc(100% + 150px); margin: calc(-50% - 75px) 0 0 calc(-50% - 75px); border: 1px solid rgba(255, 43, 214, .12); animation-duration: 22s; animation-direction: reverse; }
+    .orbit.o2::before { background: var(--mag); box-shadow: 0 0 16px var(--mag); width: 6px; height: 6px; margin-left: -3px; }
+    @keyframes spin { to { transform: rotate(1turn); } }
+    .holo-frame { position: relative; padding: 8px; border-radius: 22px; overflow: hidden; background: rgba(0, 240, 255, .16); box-shadow: 0 30px 80px rgba(0, 0, 0, .5), 0 0 40px rgba(0, 240, 255, .12); }
+    .holo-frame::before {
+      content: ""; position: absolute; inset: -60%; z-index: 0;
+      background: conic-gradient(from 0deg, transparent 0 50%, var(--cyan) 66%, var(--mag) 80%, transparent 90%);
+      animation: spin 5s linear infinite; will-change: transform;
+    }
+    .holo-inner { position: relative; z-index: 1; overflow: hidden; border-radius: 16px; background: radial-gradient(circle at 50% 30%, #1a2550, #080c1f 72%); }
+    .holo-inner::before {
+      content: ""; position: absolute; inset: 0; z-index: 0;
+      background: linear-gradient(90deg, rgba(0, 240, 255, .09) 1px, transparent 1px) 0 0 / 24px 24px, linear-gradient(0deg, rgba(0, 240, 255, .09) 1px, transparent 1px) 0 0 / 24px 24px;
+    }
+    .holo-photo { position: relative; z-index: 1; width: 100%; height: auto; filter: saturate(1.05) contrast(1.04); }
+    .holo-scan {
+      position: absolute; left: 0; right: 0; top: 0; height: 18%; z-index: 2; pointer-events: none; mix-blend-mode: screen;
+      background: linear-gradient(180deg, transparent, rgba(0, 240, 255, .28), transparent);
+      animation: scanY 3.6s ease-in-out infinite alternate; will-change: transform;
+    }
+    @keyframes scanY { from { transform: translateY(-100%); } to { transform: translateY(560%); } }
+    .hc { position: absolute; z-index: 3; width: 18px; height: 18px; border: 2px solid var(--cyan); filter: drop-shadow(0 0 6px var(--cyan)); }
+    .hc.tl { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
+    .hc.tr { top: 10px; right: 10px; border-left: 0; border-bottom: 0; }
+    .hc.bl { bottom: 10px; left: 10px; border-right: 0; border-top: 0; }
+    .hc.br { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
+    .holo-label { margin-top: 16px; text-align: center; font: 600 11px/1.6 var(--font-mono); letter-spacing: .2em; color: var(--muted); text-transform: uppercase; }
+
+    /* ========== 區段標題 ========== */
+    .sec { margin-top: 68px; scroll-margin-top: 90px; }
+    .sec-title { display: flex; align-items: center; gap: 14px; margin: 0 0 22px; font: 700 1.05rem/1 var(--font-ui); letter-spacing: .14em; color: #fff; }
+    .sec-title .idx { font: 700 .78rem/1 var(--font-hud); color: var(--cyan); padding: 6px 9px; border: 1px solid var(--line); border-radius: 4px; background: rgba(0, 240, 255, .06); letter-spacing: .1em; }
+    .sec-title .ln { flex: 1; height: 1px; background: linear-gradient(90deg, var(--cyan), rgba(0, 240, 255, 0)); }
+    .sec-title .tag { font: 600 10px/1 var(--font-mono); letter-spacing: .2em; color: var(--dim); }
+
+    /* ========== 卡片（旋轉光邊 + 聚光） ========== */
+    .card {
+      position: relative; padding: 24px; border-radius: var(--r); overflow: hidden;
+      background: rgba(255, 255, 255, .09);
+      box-shadow: 0 22px 60px rgba(0, 0, 0, .38);
+    }
+    .card::before {
+      content: ""; position: absolute; inset: -60%; z-index: 0; opacity: 0;
+      background: conic-gradient(from 0deg, transparent 0 58%, var(--cyan) 74%, var(--mag) 85%, transparent 92%);
+      animation: spin 4s linear infinite paused; transition: opacity .45s;
+    }
+    .card::after { content: ""; position: absolute; inset: 1px; z-index: 0; border-radius: calc(var(--r) - 1px); background: var(--glass); }
+    .card > * { position: relative; z-index: 2; }
+    .card .spot {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity .35s;
+      background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(0, 240, 255, .16), transparent 62%);
+    }
+    .card:hover::before, .card.live::before { opacity: 1; animation-play-state: running; }
+    .card:hover .spot { opacity: 1; }
+    .tilt { transition: transform .5s cubic-bezier(.2, .8, .2, 1); }
+    .tilt:hover { transition-duration: .12s; }
+    .sub { margin-bottom: 14px; font: 600 11px/1 var(--font-mono); letter-spacing: .2em; color: var(--cyan); text-transform: uppercase; }
+    .term { margin-bottom: 14px; font: 600 12px/1 var(--font-mono); letter-spacing: .08em; color: var(--lime); }
+    .term .caret { background: var(--lime); box-shadow: 0 0 10px var(--lime); height: 1em; }
+    .summary { color: #d6e9f5; font-size: 1.02rem; line-height: 1.95; text-align: justify; }
+    .summary p:last-child { margin-bottom: 0; }
+
+    .grid2 { display: grid; grid-template-columns: 1.1fr .9fr; gap: 18px; }
+    .grid2.even { grid-template-columns: 1fr 1fr; }
+    .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+    /* 技能條 */
+    .bars { display: grid; gap: 16px; }
+    .bar-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 7px; font-size: .92rem; }
+    .bar-head b { font: 700 .78rem/1 var(--font-hud); color: var(--cyan); letter-spacing: .06em; }
+    .track { position: relative; height: 10px; overflow: hidden; border-radius: 999px; background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .08); }
+    .fill {
+      position: relative; height: 100%; width: 0; overflow: hidden; border-radius: inherit;
+      background: linear-gradient(90deg, var(--cyan), var(--vio), var(--mag));
+      box-shadow: 0 0 14px rgba(0, 240, 255, .5); transition: width 1.5s cubic-bezier(.2, .8, .2, 1);
+    }
+    .fill::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .55), transparent); transform: translateX(-100%); animation: shimmer 2.8s ease-in-out infinite; }
+    @keyframes shimmer { 60%, 100% { transform: translateX(100%); } }
+    .in .fill { width: var(--w, 80%); }
+
+    /* 標籤 */
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: .86rem; color: #dff8ff;
+      border: 1px solid var(--line); border-radius: 6px; background: rgba(0, 240, 255, .05);
+      transition: transform .25s, background .25s, box-shadow .25s;
+    }
+    .chip::before { content: ""; width: 5px; height: 5px; background: var(--cyan); box-shadow: 0 0 8px var(--cyan); transform: rotate(45deg); }
+    .chip:hover { transform: translateY(-2px); background: rgba(0, 240, 255, .15); box-shadow: 0 8px 24px rgba(0, 240, 255, .2); }
+    .chip.m { border-color: var(--line2); background: rgba(255, 43, 214, .05); }
+    .chip.m::before { background: var(--mag); box-shadow: 0 0 8px var(--mag); }
+    .chip.m:hover { background: rgba(255, 43, 214, .15); box-shadow: 0 8px 24px rgba(255, 43, 214, .2); }
+
+    /* 跑馬燈 */
+    .marquee {
+      position: relative; overflow: hidden; padding: 14px 0;
+      border-top: 1px solid rgba(255, 255, 255, .08); border-bottom: 1px solid rgba(255, 255, 255, .08);
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+      mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+    }
+    .marquee-track { display: flex; width: max-content; animation: marquee 32s linear infinite; will-change: transform; }
+    .marquee:hover .marquee-track { animation-play-state: paused; }
+    .mq { display: flex; gap: 12px; padding-right: 12px; }
+    .mq .chip { white-space: nowrap; }
+    @keyframes marquee { to { transform: translateX(-50%); } }
+
+    /* 案例卡 */
+    .case h3 { margin: 0 0 8px; font-size: 1rem; color: #fff; }
+    .case p { margin: 0; font-size: .9rem; color: var(--muted); }
+    .case .num { margin-bottom: 12px; font: 700 1.7rem/1 var(--font-hud); color: transparent; -webkit-text-stroke: 1px rgba(0, 240, 255, .75); }
+
+    /* 職涯時間軸 */
+    .tl { position: relative; display: grid; gap: 18px; margin: 0; padding: 0; list-style: none; }
+    .tl::before { content: ""; position: absolute; left: 15px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(180deg, var(--cyan), var(--vio), var(--mag)); opacity: .55; }
+    .tl::after { content: ""; position: absolute; left: 12px; top: -60px; width: 8px; height: 60px; border-radius: 4px; background: linear-gradient(180deg, transparent, #fff, transparent); opacity: .85; animation: flow 4.5s linear infinite; }
+    @keyframes flow { to { top: 100%; } }
+    .tl-item { position: relative; padding-left: 50px; }
+    .tl-node { position: absolute; left: 8px; top: 24px; width: 16px; height: 16px; border-radius: 50%; background: var(--bg); border: 2px solid var(--cyan); box-shadow: 0 0 0 4px rgba(0, 240, 255, .15), 0 0 16px var(--cyan); }
+    .tl-node::after { content: ""; position: absolute; inset: -8px; border-radius: 50%; border: 1px solid rgba(0, 240, 255, .5); animation: ping 2.4s ease-out infinite; }
+    @keyframes ping { from { transform: scale(.6); opacity: 1; } to { transform: scale(1.8); opacity: 0; } }
+    .tl-card { display: grid; grid-template-columns: 150px 1fr; gap: 4px 22px; align-items: start; padding: 18px 22px; }
+    .tl-card time { grid-row: span 3; font: 700 .84rem/1.5 var(--font-hud); color: var(--mag); letter-spacing: .06em; text-shadow: 0 0 14px rgba(255, 43, 214, .4); }
+    .tl-card h3 { margin: 0; font-size: 1.1rem; color: #fff; }
+    .tl-card .t { margin: 0; font-size: .9rem; color: var(--cyan); }
+    .tl-card small { color: var(--muted); }
+
+    /* 資料矩陣 */
+    .kv p { display: grid; grid-template-columns: 96px 1fr; gap: 12px; margin: 0; padding: 10px 0; border-bottom: 1px dashed rgba(255, 255, 255, .09); font-size: .94rem; }
+    .kv p:last-child { border-bottom: 0; }
+    .kv span { color: var(--dim); font-size: .8rem; letter-spacing: .1em; line-height: 1.9; }
+    .kv b { font-weight: 500; color: var(--ink); word-break: break-word; }
+    .kv a { color: var(--ink); border-bottom: 1px solid rgba(0, 240, 255, .3); transition: color .25s, border-color .25s; word-break: break-all; }
+    .kv a:hover { color: var(--cyan); border-color: var(--cyan); }
+
+    .foot {
+      display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 72px; padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, .08); font: 600 11px/1.6 var(--font-mono); letter-spacing: .16em; color: var(--dim); text-transform: uppercase;
+    }
+
+    /* ========== 響應式 ========== */
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; min-height: 0; gap: 30px; }
+      .holo { order: -1; width: min(72%, 300px); }
+      .grid2, .grid2.even { grid-template-columns: 1fr; }
+      .grid4, .metrics { grid-template-columns: repeat(2, 1fr); }
+      .snav { display: none; }
+    }
+    @media (max-width: 600px) {
+      .page { width: calc(100% - 28px); padding-top: 80px; }
+      .hud, .hud-b { padding-left: 16px; padding-right: 16px; }
+      .hide-s { display: none; }
+      .sec { margin-top: 46px; }
+      .grid4 { grid-template-columns: 1fr; }
+      .tl-card { grid-template-columns: 1fr; }
+      .tl-card time { grid-row: auto; }
+      .card { padding: 18px; }
+      .orbit.o2 { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      .reveal { opacity: 1; transform: none; }
+      .fill { width: var(--w, 80%); }
+    }
+    @media print {
+      .mv-canvas, .mv-cursor, .mv-scan, .mv-vignette, .mv-lines, .hud, .hud-b, .hud-corner, .snav, #scroll-progress-bar, .orbit { display: none !important; }
+      body { background: #fff; color: #111; }
+      .page { width: 100%; padding: 0; }
+      .reveal { opacity: 1; transform: none; }
+      .card { background: #ccc; box-shadow: none; }
+      .card::after { background: #fff; }
+      .name { background: none; color: #111; -webkit-text-fill-color: #111; filter: none; }
+      .summary, .kv b, .kv a, .tl-card h3, .case h3, .metric strong, .sec-title { color: #111; text-shadow: none; }
+      .metric { background: #f4f4f4; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="mvCanvas" class="mv-canvas" aria-hidden="true"></canvas>
+  <div class="mv-vignette" aria-hidden="true"></div>
+  <div class="mv-lines" aria-hidden="true"></div>
+  <div class="mv-scan" aria-hidden="true"></div>
+  <div class="mv-cursor" aria-hidden="true"></div>
+  <div id="scroll-progress-bar" aria-hidden="true"></div>
+
+  <header class="hud" aria-hidden="true">
+    <span><b id="hudName">RESUME</b> // RESUME.SYS <span class="hide-s">v2.0 // METAVERSE</span></span>
+    <span><i class="dot"></i>ONLINE <span class="hide-s">// <span id="hudClock">--:--:--</span></span></span>
+  </header>
+  <div class="hud-b" aria-hidden="true">
+    <span>SCROLL // <b id="hudScroll">000%</b></span>
+    <span id="scrollHint" class="hint">▼ SCROLL TO EXPLORE</span>
+  </div>
+  <i class="hud-corner tl" aria-hidden="true"></i><i class="hud-corner tr" aria-hidden="true"></i>
+  <i class="hud-corner bl" aria-hidden="true"></i><i class="hud-corner br" aria-hidden="true"></i>
+
+  <nav class="snav" aria-label="區段導覽">
+    <a href="#top"><span>TOP</span><i></i></a>
+    <a href="#s-summary"><span>摘要</span><i></i></a>
+    <a href="#s-skills"><span>專長</span><i></i></a>
+    <a href="#s-tools"><span>工具</span><i></i></a>
+    <a href="#s-jobs"><span>經歷</span><i></i></a>
+    <a href="#s-info"><span>資料</span><i></i></a>
+  </nav>
+
+  <main id="resumeRoot" class="page" aria-live="polite">
+    <div class="boot"><div class="boot-bar"><i></i></div><p>ESTABLISHING LINK // data.json</p></div>
+  </main>
+  <noscript><p class="error">此頁面需要啟用 JavaScript。</p></noscript>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /** @type {HTMLElement} */
+      const root = document.getElementById('resumeRoot');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const finePointer = window.matchMedia('(pointer: fine)').matches;
+      const previewKey = 'ptResumeDataDraft';
+      const previewMode = new URLSearchParams(location.search).get('preview') === '1';
+      const photoPath = 'myphoto.png';
+
+      const defaults = {
+        profile: { name: '', role: '', tagline: '' },
+        contact: { phone: '', email: '', address: '', education: '', license: '', language: '' },
+        application: { desiredPosition: '', salary: '', availableDate: '', gender: '', birthdate: '', heightWeight: '', militaryMarriage: '' },
+        labels: { phone: '電話', email: 'Email', address: '地址', education: '學歷', license: '證照', language: '語言' },
+        sectionTitles: { summary: '專業摘要', application: '應徵資訊', skills: '臨床專長', tools: '行政與 AI 工具', jobs: '工作經歷', contact: '聯絡資料', cases: '行政流程案例' }
+      };
+
+      /* ================================================================
+       * 1. WebGL 元宇宙背景（星雲 + 星點 + 透視網格地平線）
+       *    - 以降解析度渲染再由 CSS 放大，GPU 負擔極低
+       *    - 每 90 幀檢查一次平均耗時，過慢自動再降畫質
+       *    - 分頁隱藏時暫停；prefers-reduced-motion 時只畫一幀
+       * ================================================================ */
+      const FRAG = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+uniform vec2 u_res;uniform float u_time;uniform vec2 u_mouse;uniform float u_scroll;
+float hash(vec2 p){p=fract(p*vec2(127.1,311.7));p+=dot(p,p+19.19);return fract(p.x*p.y);}
+float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+  return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.,1.)),f.x),f.y);}
+float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<4;i++){v+=a*noise(p);p=p*2.02+vec2(3.1,1.7);a*=.5;}return v;}
+void main(){
+  vec2 uv=gl_FragCoord.xy/u_res;
+  vec2 p=(gl_FragCoord.xy-.5*u_res)/u_res.y;
+  p+=u_mouse*vec2(.03,.02);
+  float t=u_time;
+  vec3 col=mix(vec3(.015,.02,.06),vec3(.04,.06,.16),uv.y);
+  vec2 q=p*1.4+vec2(t*.02,-t*.015)+vec2(0.,u_scroll*.25);
+  float n1=fbm(q);
+  float n2=fbm(q*1.9+n1*1.2-t*.01);
+  vec3 neb=vec3(0.,.8,1.)*pow(n1,2.2)*.9+vec3(1.,.2,.8)*pow(n2,2.4)*.7+vec3(.45,.25,1.)*n1*n2*.6;
+  col+=neb*(.35+.4*smoothstep(-.3,.5,p.y));
+  for(int i=0;i<2;i++){
+    float fi=float(i);
+    vec2 sp=(p+u_mouse*.012*(fi+1.))*(110.+fi*70.)+fi*17.3;
+    vec2 id=floor(sp);float h=hash(id);
+    if(h>.982){
+      vec2 f=fract(sp)-.5+(vec2(hash(id+1.3),hash(id+7.1))-.5)*.6;
+      float d=length(f);float tw=.55+.45*sin(t*(1.5+h*3.)+h*40.);
+      col+=smoothstep(.22,0.,d)*tw*mix(vec3(.7,.9,1.),vec3(1.,.8,1.),h)*.9;
+    }
+  }
+  float hz=-.14+u_scroll*.22;
+  if(p.y<hz){
+    float z=1./(hz-p.y);
+    vec2 fp=vec2(p.x*z*1.6+u_mouse.x*.6,z*1.6+t*1.4);
+    vec2 g=abs(fract(fp)-.5);
+    float m=min(g.x,g.y);
+    float th=clamp(.014*z,.02,.5);
+    float line=smoothstep(th,0.,m)+smoothstep(th*4.,0.,m)*.35;
+    float fog=exp(-z*.16);
+    vec3 gc=mix(vec3(0.,.95,1.),vec3(1.,.25,.85),clamp(z*.08-.1,0.,1.));
+    col+=line*fog*gc*.95+fog*.03*vec3(0.,.6,.9);
+  }
+  float d=abs(p.y-hz);
+  col+=exp(-d*14.)*vec3(1.,.2,.8)*.28+exp(-d*90.)*vec3(.5,1.,1.)*.6;
+  col*=1.-.45*pow(length(uv-.5)*1.25,2.);
+  gl_FragColor=vec4(col,1.);
+}`;
+
+      /**
+       * 建立 WebGL 背景；若不支援則退回 CSS 漸層。
+       */
+      function initBackground() {
+        const canvas = document.getElementById('mvCanvas');
+        const gl = canvas.getContext('webgl', { antialias: false, alpha: false, depth: false, stencil: false, powerPreference: 'high-performance' });
+        if (!gl) return fallback(canvas);
+
+        /**
+         * 編譯著色器
+         * @param {number} type
+         * @param {string} src
+         */
+        const compile = function (type, src) {
+          const shader = gl.createShader(type);
+          gl.shaderSource(shader, src);
+          gl.compileShader(shader);
+          if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(shader));
+          return shader;
+        };
+
+        let program;
+        try {
+          program = gl.createProgram();
+          gl.attachShader(program, compile(gl.VERTEX_SHADER, 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}'));
+          gl.attachShader(program, compile(gl.FRAGMENT_SHADER, FRAG));
+          gl.linkProgram(program);
+          if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(program));
+        } catch (error) {
+          return fallback(canvas);
+        }
+
+        gl.useProgram(program);
+        const buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+        const attr = gl.getAttribLocation(program, 'a');
+        gl.enableVertexAttribArray(attr);
+        gl.vertexAttribPointer(attr, 2, gl.FLOAT, false, 0, 0);
+
+        const uRes = gl.getUniformLocation(program, 'u_res');
+        const uTime = gl.getUniformLocation(program, 'u_time');
+        const uMouse = gl.getUniformLocation(program, 'u_mouse');
+        const uScroll = gl.getUniformLocation(program, 'u_scroll');
+
+        let quality = 1;
+        const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
+        let scroll = 0;
+        let running = true;
+        let acc = 0;
+        let frames = 0;
+        const start = performance.now();
+        let last = start;
+
+        /** 依視窗與畫質係數重設畫布解析度 */
+        function resize() {
+          const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+          const base = (window.innerWidth < 760 ? .55 : .62) * dpr * quality;
+          const scale = Math.min(base, 1400 / Math.max(window.innerWidth, 1));
+          canvas.width = Math.max(1, Math.round(window.innerWidth * scale));
+          canvas.height = Math.max(1, Math.round(window.innerHeight * scale));
+          gl.viewport(0, 0, canvas.width, canvas.height);
+          if (reduceMotion) draw(performance.now());
+        }
+
+        /** 畫一幀 */
+        function draw(now) {
+          mouse.x += (mouse.tx - mouse.x) * .05;
+          mouse.y += (mouse.ty - mouse.y) * .05;
+          gl.uniform2f(uRes, canvas.width, canvas.height);
+          gl.uniform1f(uTime, (now - start) / 1000);
+          gl.uniform2f(uMouse, mouse.x, mouse.y);
+          gl.uniform1f(uScroll, scroll);
+          gl.drawArrays(gl.TRIANGLES, 0, 3);
+        }
+
+        /** 動畫迴圈（含自動降畫質） */
+        function loop(now) {
+          if (!running) return;
+          const dt = now - last;
+          last = now;
+          acc += dt;
+          frames += 1;
+          if (frames === 90) {
+            if (acc / frames > 22 && quality > .45) {
+              quality *= .8;
+              resize();
+            }
+            acc = 0;
+            frames = 0;
+          }
+          draw(now);
+          requestAnimationFrame(loop);
+        }
+
+        resize();
+        window.addEventListener('resize', debounce(resize, 150));
+        window.addEventListener('scroll', function () {
+          const max = document.documentElement.scrollHeight - window.innerHeight;
+          scroll = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+        }, { passive: true });
+        if (finePointer) {
+          window.addEventListener('pointermove', function (event) {
+            mouse.tx = event.clientX / window.innerWidth * 2 - 1;
+            mouse.ty = -(event.clientY / window.innerHeight * 2 - 1);
+          }, { passive: true });
+        }
+
+        if (reduceMotion) {
+          draw(performance.now());
+          return;
+        }
+        requestAnimationFrame(loop);
+        document.addEventListener('visibilitychange', function () {
+          if (document.hidden) {
+            running = false;
+          } else if (!running) {
+            running = true;
+            last = performance.now();
+            requestAnimationFrame(loop);
+          }
+        });
+      }
+
+      /**
+       * WebGL 不可用時的退路
+       * @param {HTMLCanvasElement} canvas
+       */
+      function fallback(canvas) {
+        canvas.remove();
+        document.body.classList.add('mv-fallback');
+      }
+
+      /* ================================================================
+       * 2. 資料載入（fetch → iframe 退路，支援 ?preview=1 草稿）
+       * ================================================================ */
+      async function loadData() {
+        if (previewMode) {
+          try {
+            const raw = localStorage.getItem(previewKey);
+            if (raw) return JSON.parse(raw);
+          } catch (error) {}
+        }
+        try {
+          const response = await fetch('data.json', { cache: 'no-cache' });
+          if (!response.ok) throw new Error(response.status);
+          return await response.json();
+        } catch (error) {
+          return loadViaFrame('data.json');
+        }
+      }
+
+      /**
+       * file:// 環境下以隱藏 iframe 讀取 JSON
+       * @param {string} url
+       */
+      function loadViaFrame(url) {
+        return new Promise(function (resolve, reject) {
+          const frame = document.createElement('iframe');
+          frame.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden;';
+          frame.onload = function () {
+            try {
+              const raw = frame.contentDocument?.body?.innerText || '';
+              frame.remove();
+              raw ? resolve(JSON.parse(raw)) : reject(new Error('empty'));
+            } catch (error) {
+              frame.remove();
+              reject(error);
+            }
+          };
+          frame.onerror = function () { frame.remove(); reject(new Error('load failed')); };
+          frame.src = url;
+          document.body.appendChild(frame);
+        });
+      }
+
+      /**
+       * 補齊缺漏欄位
+       * @param {object} source
+       */
+      function normalize(source) {
+        const s = source && typeof source === 'object' ? source : {};
+        const arr = function (value) { return Array.isArray(value) ? value : []; };
+        return {
+          profile: { ...defaults.profile, ...(s.profile || {}) },
+          contact: { ...defaults.contact, ...(s.contact || {}) },
+          application: { ...defaults.application, ...(s.application || {}) },
+          labels: { ...defaults.labels, ...(s.labels || {}) },
+          sectionTitles: { ...defaults.sectionTitles, ...(s.sectionTitles || {}) },
+          metrics: arr(s.metrics),
+          summary: arr(s.summary),
+          clinicalSkills: arr(s.clinicalSkills),
+          toolsShort: arr(s.toolsShort),
+          toolsFull: arr(s.toolsFull),
+          skillBars: arr(s.skillBars),
+          jobs: arr(s.jobs),
+          cases: arr(s.cases)
+        };
+      }
+
+      /* ================================================================
+       * 3. 渲染
+       * ================================================================ */
+      let cleanups = [];
+
+      /**
+       * 將資料渲染為元宇宙版履歷
+       * @param {object} source
+       */
+      function render(source) {
+        const d = normalize(source);
+        const name = d.profile.name || '履歷';
+        const role = d.profile.role;
+        const tagline = d.profile.tagline;
+        const c = d.contact;
+        const a = d.application;
+        const title = function (key) { return d.sectionTitles[key] || defaults.sectionTitles[key] || key; };
+
+        const metrics = d.metrics.length ? d.metrics : [
+          { value: String(d.jobs.length), label: '醫院與診所歷練' },
+          { value: a.availableDate, label: '可上班日' }
+        ].filter(function (m) { return m.value; });
+        const bars = d.skillBars.length ? d.skillBars : d.clinicalSkills.map(function (skill, index) {
+          return { label: skill, width: ['96%', '90%', '84%', '88%', '80%', '76%'][index] || '78%' };
+        });
+        const tools = d.toolsFull.length ? d.toolsFull : d.toolsShort;
+        const cases = d.cases.length ? d.cases : d.jobs.slice(0, 4).map(function (job) { return { title: job.company, text: job.detail }; });
+        const summary = d.summary.length ? d.summary : [tagline].filter(Boolean);
+        const appRows = [
+          ['應徵職務', a.desiredPosition], ['希望待遇', a.salary], ['可上班日', a.availableDate], ['性別', a.gender],
+          ['出生日期', a.birthdate], ['身高/體重', a.heightWeight], ['兵役/婚姻', a.militaryMarriage]
+        ].filter(function (row) { return row[1]; });
+        const contactRows = [
+          [d.labels.phone, c.phone, 'tel:' + String(c.phone).replace(/[^\d+]/g, '')],
+          [d.labels.email, c.email, 'mailto:' + c.email],
+          [d.labels.address, c.address], [d.labels.education, c.education],
+          [d.labels.license, c.license], [d.labels.language, c.language]
+        ].filter(function (row) { return row[1]; });
+
+        document.title = name + ' Resume // Metaverse';
+        document.getElementById('hudName').textContent = name;
+
+        root.className = 'page';
+        root.innerHTML = `
+          <section class="hero" id="top">
+            <div class="hero-copy">
+              <div class="eyebrow boot-in" style="--d:.05s">ONLINE // ${esc(role || 'RESUME')}</div>
+              <h1 class="name glitch boot-in" data-text="${escA(name)}" style="--d:.15s">${esc(name)}</h1>
+              <p class="role boot-in" style="--d:.3s"><span id="typer">${esc(role)}</span><span class="caret"></span></p>
+              <p class="tagline boot-in" style="--d:.4s">${esc(tagline)}</p>
+              <div class="cta boot-in" style="--d:.5s">
+                ${c.phone ? `<a class="btn" href="tel:${escA(String(c.phone).replace(/[^\d+]/g, ''))}">☎ ${esc(c.phone)}</a>` : ''}
+                ${c.email ? `<a class="btn alt" href="mailto:${escA(c.email)}">✉ ${esc(c.email)}</a>` : ''}
+                <a class="btn ghost" href="#s-jobs">▼ ${esc(title('jobs'))}</a>
+              </div>
+              <div class="metrics boot-in" style="--d:.62s">
+                ${metrics.map(function (m) {
+                  const value = String(m.value ?? '');
+                  return `<div class="metric"><strong class="metric-val${value.length > 6 ? ' long' : ''}" data-val="${escA(value)}">${esc(value)}</strong><span>${esc(m.label)}</span></div>`;
+                }).join('')}
+              </div>
+            </div>
+            <div class="holo boot-in" style="--d:.25s">
+              <div class="holo-float">
+                <div class="orbit o1"></div><div class="orbit o2"></div>
+                <div class="holo-frame tilt" data-tilt="8">
+                  <div class="holo-inner">
+                    <img class="holo-photo" src="${photoPath}" alt="${escA(name)} 個人照片" width="468" height="533" decoding="async" fetchpriority="high">
+                    <div class="holo-scan"></div>
+                    <i class="hc tl"></i><i class="hc tr"></i><i class="hc bl"></i><i class="hc br"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="holo-label">ID // ${esc(c.license || 'VERIFIED')}<br>${esc(c.education)}</div>
+            </div>
+          </section>
+
+          <section class="sec reveal" id="s-summary">
+            ${secTitle('01', title('summary'), 'PROFILE.LOG')}
+            <div class="card tilt live" data-tilt="2.5"><div class="spot"></div>
+              <div class="term">&gt; cat summary.txt<span class="caret"></span></div>
+              <div class="summary">${summary.map(function (p) { return `<p>${esc(p)}</p>`; }).join('')}</div>
+            </div>
+          </section>
+
+          <section class="sec reveal" id="s-skills">
+            ${secTitle('02', title('skills'), 'SKILL.MATRIX')}
+            <div class="grid2">
+              <div class="card tilt" data-tilt="4"><div class="spot"></div>
+                <div class="sub">Proficiency // 熟練度</div>
+                <div class="bars">
+                  ${bars.map(function (bar) {
+                    const width = bar.width || '80%';
+                    return `<div class="bar" style="--w:${escA(width)}"><div class="bar-head"><span>${esc(bar.label)}</span><b>${esc(width)}</b></div><div class="track"><div class="fill"></div></div></div>`;
+                  }).join('')}
+                </div>
+              </div>
+              <div class="card tilt" data-tilt="4"><div class="spot"></div>
+                <div class="sub">Clinical // 臨床專長</div>
+                <div class="chips">${chips(d.clinicalSkills, '')}</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="sec reveal" id="s-tools">
+            ${secTitle('03', title('tools'), 'TOOLCHAIN')}
+            <div class="marquee"><div class="marquee-track"><div class="mq">${chips(tools, 'm')}</div><div class="mq">${chips(tools, 'm')}</div></div></div>
+            <div class="grid4" style="margin-top:18px">
+              ${cases.map(function (item, index) {
+                return `<div class="card case tilt" data-tilt="6"><div class="spot"></div><div class="num">0${index + 1}</div><h3>${esc(item.title)}</h3><p>${esc(item.text)}</p></div>`;
+              }).join('')}
+            </div>
+          </section>
+
+          <section class="sec reveal" id="s-jobs">
+            ${secTitle('04', title('jobs'), 'CAREER.TIMELINE')}
+            <ol class="tl">
+              ${d.jobs.map(function (job, index) {
+                return `<li class="tl-item reveal" style="--d:${(index * .08).toFixed(2)}s"><span class="tl-node"></span>
+                  <div class="card tl-card tilt" data-tilt="3"><div class="spot"></div>
+                    <time>${esc(job.period)}</time><h3>${esc(job.company)}</h3><p class="t">${esc(job.title)}</p><small>${esc(job.detail)}</small>
+                  </div></li>`;
+              }).join('')}
+            </ol>
+          </section>
+
+          <section class="sec reveal" id="s-info">
+            ${secTitle('05', title('application') + ' / ' + title('contact'), 'DATA.MATRIX')}
+            <div class="grid2 even">
+              <div class="card tilt" data-tilt="4"><div class="spot"></div><div class="sub">${esc(title('application'))}</div>${kv(appRows)}</div>
+              <div class="card tilt" data-tilt="4"><div class="spot"></div><div class="sub">${esc(title('contact'))}</div>${kv(contactRows)}</div>
+            </div>
+          </section>
+
+          <footer class="foot reveal">
+            <span>© ${new Date().getFullYear()} ${esc(name)} // ALL SYSTEMS NOMINAL</span>
+            <span>END OF TRANSMISSION ■</span>
+          </footer>
+        `;
+
+        afterRender(d);
+      }
+
+      /**
+       * 區段標題
+       * @param {string} idx
+       * @param {string} text
+       * @param {string} tag
+       */
+      function secTitle(idx, text, tag) {
+        return `<h2 class="sec-title"><span class="idx">${esc(idx)}</span><span class="txt decode" data-text="${escA(text)}">${esc(text)}</span><span class="ln"></span><span class="tag hide-s">${esc(tag)}</span></h2>`;
+      }
+
+      /**
+       * 標籤列
+       * @param {string[]} items
+       * @param {string} cls
+       */
+      function chips(items, cls) {
+        const values = (Array.isArray(items) ? items : []).filter(Boolean);
+        if (!values.length) return '<p class="muted">尚未填寫</p>';
+        return values.map(function (item) { return `<span class="chip ${cls}">${esc(item)}</span>`; }).join('');
+      }
+
+      /**
+       * 鍵值列表
+       * @param {Array<[string, string, string=]>} rows
+       */
+      function kv(rows) {
+        return `<div class="kv">${rows.map(function (row) {
+          const value = row[2] ? `<a href="${escA(row[2])}">${esc(row[1])}</a>` : `<b>${esc(row[1])}</b>`;
+          return `<p><span>${esc(row[0])}</span>${value}</p>`;
+        }).join('')}</div>`;
+      }
+
+      /* ================================================================
+       * 4. 渲染後的互動特效
+       * ================================================================ */
+
+      /**
+       * @param {object} d 正規化後的資料
+       */
+      function afterRender(d) {
+        cleanups.forEach(function (fn) { fn(); });
+        cleanups = [];
+
+        // 打字機：職稱 + tagline 拆詞輪播
+        const phrases = [d.profile.role].concat(String(d.profile.tagline || '').split(/[、,，/／]/)).map(function (s) { return s.trim(); }).filter(Boolean);
+        typewriter(document.getElementById('typer'), Array.from(new Set(phrases)));
+
+        // 指標數字：進場後跑數
+        window.setTimeout(function () {
+          root.querySelectorAll('.metric-val').forEach(countUp);
+        }, 700);
+
+        // 捲動揭示
+        const reveals = root.querySelectorAll('.reveal');
+        if ('IntersectionObserver' in window && !reduceMotion) {
+          const io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add('in');
+              entry.target.querySelectorAll('.sec-title .decode').forEach(function (el) { decode(el, el.dataset.text || ''); });
+              io.unobserve(entry.target);
+            });
+          }, { threshold: .12, rootMargin: '0px 0px -6% 0px' });
+          reveals.forEach(function (el) { io.observe(el); });
+          cleanups.push(function () { io.disconnect(); });
+
+          const links = Array.from(document.querySelectorAll('.snav a'));
+          const nav = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (!entry.isIntersecting) return;
+              links.forEach(function (link) { link.classList.toggle('on', link.getAttribute('href') === '#' + entry.target.id); });
+            });
+          }, { rootMargin: '-35% 0px -55% 0px', threshold: 0 });
+          root.querySelectorAll('section[id]').forEach(function (section) { nav.observe(section); });
+          cleanups.push(function () { nav.disconnect(); });
+        } else {
+          reveals.forEach(function (el) { el.classList.add('in'); });
+        }
+
+        bindTilt(root);
+
+        // 非同步渲染後才存在的錨點：首次渲染時對齊網址 hash
+        if (!afterRender.hashDone && location.hash.length > 1) {
+          afterRender.hashDone = true;
+          const target = document.getElementById(location.hash.slice(1));
+          if (target) target.scrollIntoView({ block: 'start', behavior: 'instant' });
+        }
+      }
+
+      /**
+       * 打字機效果
+       * @param {HTMLElement|null} el
+       * @param {string[]} phrases
+       */
+      function typewriter(el, phrases) {
+        if (!el || !phrases.length) return;
+        if (reduceMotion || phrases.length === 1) { el.textContent = phrases[0]; return; }
+        let phraseIndex = 0;
+        let charIndex = phrases[0].length;
+        let deleting = false;
+        let timer = 0;
+        const tick = function () {
+          const phrase = phrases[phraseIndex];
+          charIndex += deleting ? -1 : 1;
+          el.textContent = phrase.slice(0, charIndex);
+          let wait = deleting ? 38 : 90;
+          if (!deleting && charIndex >= phrase.length) { wait = 2400; deleting = true; }
+          else if (deleting && charIndex <= 0) { deleting = false; phraseIndex = (phraseIndex + 1) % phrases.length; wait = 420; }
+          timer = window.setTimeout(tick, wait);
+        };
+        timer = window.setTimeout(tick, 2600);
+        cleanups.push(function () { window.clearTimeout(timer); });
+      }
+
+      /**
+       * 數字跑數（非純數字則改用解碼效果）
+       * @param {HTMLElement} el
+       */
+      function countUp(el) {
+        const raw = el.dataset.val || '';
+        const match = raw.match(/^(\d+)(\+?)$/);
+        if (!match || reduceMotion) return decode(el, raw, 1100);
+        const target = Number(match[1]);
+        const suffix = match[2];
+        const duration = 1400;
+        const startTime = performance.now();
+        const step = function (now) {
+          const k = Math.min(1, (now - startTime) / duration);
+          const eased = 1 - Math.pow(1 - k, 3);
+          el.textContent = Math.round(target * eased) + suffix;
+          if (k < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      }
+
+      /**
+       * 亂碼解碼效果
+       * @param {HTMLElement} el
+       * @param {string} finalText
+       * @param {number} [duration]
+       */
+      function decode(el, finalText, duration) {
+        if (reduceMotion || !finalText) { el.textContent = finalText; return; }
+        const chars = '01<>/[]{}#%&$@ABCDEF';
+        const total = duration || 900;
+        const startTime = performance.now();
+        const step = function (now) {
+          const k = Math.min(1, (now - startTime) / total);
+          const settled = Math.floor(finalText.length * k);
+          let text = finalText.slice(0, settled);
+          for (let i = settled; i < finalText.length; i += 1) {
+            text += /\s/.test(finalText[i]) ? finalText[i] : chars[Math.random() * chars.length | 0];
+          }
+          el.textContent = text;
+          if (k < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      }
+
+      /**
+       * 3D 傾斜 + 聚光跟隨（僅精準指標裝置）
+       * @param {HTMLElement} scope
+       */
+      function bindTilt(scope) {
+        if (!finePointer || reduceMotion) return;
+        scope.querySelectorAll('.tilt').forEach(function (card) {
+          const max = Number(card.dataset.tilt) || 5;
+          const spot = card.querySelector('.spot');
+          let raf = 0;
+          let rx = 0;
+          let ry = 0;
+          let mx = 50;
+          let my = 50;
+          const apply = function () {
+            raf = 0;
+            card.style.transform = `perspective(900px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
+            if (spot) {
+              spot.style.setProperty('--mx', mx.toFixed(1) + '%');
+              spot.style.setProperty('--my', my.toFixed(1) + '%');
+            }
+          };
+          card.addEventListener('pointermove', function (event) {
+            const rect = card.getBoundingClientRect();
+            const px = (event.clientX - rect.left) / rect.width;
+            const py = (event.clientY - rect.top) / rect.height;
+            ry = (px - .5) * 2 * max;
+            rx = -(py - .5) * 2 * max;
+            mx = px * 100;
+            my = py * 100;
+            if (!raf) raf = requestAnimationFrame(apply);
+          });
+          card.addEventListener('pointerleave', function () {
+            rx = 0;
+            ry = 0;
+            if (!raf) raf = requestAnimationFrame(apply);
+          });
+        });
+      }
+
+      /* ================================================================
+       * 5. 全域 HUD：進度條、捲動百分比、時鐘、游標光暈
+       * ================================================================ */
+      function initHud() {
+        const bar = document.getElementById('scroll-progress-bar');
+        const hudScroll = document.getElementById('hudScroll');
+        const hint = document.getElementById('scrollHint');
+        let raf = 0;
+        const onScroll = function () {
+          if (raf) return;
+          raf = requestAnimationFrame(function () {
+            raf = 0;
+            const max = document.documentElement.scrollHeight - window.innerHeight;
+            const pct = max > 0 ? Math.min(100, Math.max(0, window.scrollY / max * 100)) : 0;
+            bar.style.width = pct + '%';
+            hudScroll.textContent = String(Math.round(pct)).padStart(3, '0') + '%';
+            hint.classList.toggle('hide', window.scrollY > 80);
+          });
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll);
+        onScroll();
+
+        const clock = document.getElementById('hudClock');
+        const tickClock = function () {
+          const now = new Date();
+          clock.textContent = [now.getHours(), now.getMinutes(), now.getSeconds()].map(function (n) { return String(n).padStart(2, '0'); }).join(':');
+        };
+        tickClock();
+        window.setInterval(tickClock, 1000);
+
+        const cursor = document.querySelector('.mv-cursor');
+        if (cursor && finePointer && !reduceMotion) {
+          let x = 0;
+          let y = 0;
+          let cursorRaf = 0;
+          window.addEventListener('pointermove', function (event) {
+            x = event.clientX;
+            y = event.clientY;
+            cursor.style.opacity = '1';
+            if (!cursorRaf) {
+              cursorRaf = requestAnimationFrame(function () {
+                cursorRaf = 0;
+                cursor.style.transform = `translate(${x}px, ${y}px)`;
+              });
+            }
+          }, { passive: true });
+          document.documentElement.addEventListener('mouseleave', function () { cursor.style.opacity = '0'; });
+        }
+      }
+
+      /* ================================================================
+       * 6. 即時預覽（dataModify.html 廣播）
+       * ================================================================ */
+      function listenPreview() {
+        const onData = function (event) {
+          if (event.data?.type === 'resume-data' && event.data.data) render(event.data.data);
+        };
+        if ('BroadcastChannel' in window) new BroadcastChannel('pt-resume-data').addEventListener('message', onData);
+        window.addEventListener('message', onData);
+        window.addEventListener('storage', function (event) {
+          if (event.key !== previewKey || !event.newValue) return;
+          try { render(JSON.parse(event.newValue)); } catch (error) {}
+        });
+      }
+
+      /* ================================================================
+       * 工具
+       * ================================================================ */
+
+      /**
+       * @param {Function} fn
+       * @param {number} wait
+       */
+      function debounce(fn, wait) {
+        let timer = 0;
+        return function () {
+          window.clearTimeout(timer);
+          timer = window.setTimeout(fn, wait);
+        };
+      }
+
+      /** @param {unknown} value */
+      function esc(value) {
+        return String(value ?? '').replace(/[&<>"']/g, function (char) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char];
+        });
+      }
+
+      /** @param {unknown} value */
+      function escA(value) {
+        return esc(value).replace(/\n/g, ' ');
+      }
+
+      /* ================================================================
+       * 啟動
+       * ================================================================ */
+      async function init() {
+        initBackground();
+        initHud();
+        listenPreview();
+        try {
+          render(await loadData());
+        } catch (error) {
+          root.className = 'page';
+          root.innerHTML = '<p class="error">CONNECTION LOST // 無法讀取 data.json</p>';
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    }());
+  </script>
+</body>
+</html>
